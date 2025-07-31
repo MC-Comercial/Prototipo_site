@@ -14,8 +14,8 @@ API REST desenvolvida em Laravel para gerenciamento de centros de formação, cu
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/congo4268/pagina_centro.git
-cd pagina_centro
+git clone https://github.com/ari4268/pagina_back.git
+cd pagina_back
 ```
 
 2. Instale as dependências do PHP:
@@ -23,14 +23,17 @@ cd pagina_centro
 composer install
 ```
 
-3. Instale as dependências do Node.js:
+3. Instale as dependências do Node.js: (opcional para executar)
 ```bash
 npm install
 ```
 
-4. Copie o arquivo de ambiente:
+4. Copie o arquivo de ambiente: 
 ```bash
 cp .env.example .env
+
+
+(criar arquivo .env e cola nele tudo que está em .env.example e mude o nome da BD)
 ```
 
 5. Configure o arquivo .env com suas configurações de banco de dados:
@@ -127,3 +130,8 @@ O projeto utiliza as seguintes tabelas principais:
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+
+## 👨‍💻 Autor
+
+Seu Nome - [@ari4268](https://github.com/ari4268)
