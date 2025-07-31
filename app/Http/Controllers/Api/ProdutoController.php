@@ -102,6 +102,7 @@ class ProdutoController extends Controller
      *     path="/produtos",
      *     tags={"Produtos"},
      *     summary="Criar produto",
+     *     security={{"bearerAuth": {}}},
      *     description="Cria um novo produto.",
      *     @OA\RequestBody(
      *         required=true,
@@ -170,6 +171,7 @@ class ProdutoController extends Controller
      *     path="/produtos/{id}",
      *     tags={"Produtos"},
      *     summary="Atualizar produto",
+     *     security={{"bearerAuth": {}}},
      *     description="Atualiza um produto existente.",
      *     @OA\Parameter(
      *         name="id",
@@ -185,6 +187,10 @@ class ProdutoController extends Controller
      *         response=200,
      *         description="Produto atualizado",
      *         @OA\JsonContent(ref="#/components/schemas/Produto")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     ),
      *     @OA\Response(response=404, description="Produto não encontrado")
      * )
@@ -216,6 +222,7 @@ class ProdutoController extends Controller
      *     path="/produtos/{id}",
      *     tags={"Produtos"},
      *     summary="Excluir produto",
+     *     security={{"bearerAuth": {}}},
      *     description="Exclui um produto pelo ID.",
      *     @OA\Parameter(
      *         name="id",
@@ -224,6 +231,7 @@ class ProdutoController extends Controller
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(response=200, description="Produto excluído com sucesso"),
+     *     @OA\Response(response=401, description="Não autorizado"),
      *     @OA\Response(response=404, description="Produto não encontrado")
      * )
      */

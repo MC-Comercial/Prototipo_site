@@ -13,6 +13,13 @@ namespace App\Swagger;
  *     url="/api",
  *     description="API principal"
  * )
+ * 
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
  *
 
  * @OA\Tag(
@@ -80,12 +87,12 @@ namespace App\Swagger;
  * @OA\Schema(
  *     schema="Curso",
  *     type="object",
- *     required={"nome", "descricao", "programa", "area", "modalidade", "ativo", "centros"},
+ *     required={"nome", "descricao", "modalidade", "ativo", "centros"},
  *     @OA\Property(property="id", type="integer", readOnly=true),
  *     @OA\Property(property="nome", type="string", maxLength=100),
  *     @OA\Property(property="descricao", type="string"),
- *     @OA\Property(property="programa", type="string"),
- *     @OA\Property(property="area", type="string", maxLength=100),
+ *     @OA\Property(property="programa", type="string", nullable=true),
+ *     @OA\Property(property="area", type="string", maxLength=100, nullable=true),
  *     @OA\Property(property="modalidade", type="string", enum={"presencial", "online"}),
  *     @OA\Property(property="imagem_url", type="string", format="uri", nullable=true),
  *     @OA\Property(property="ativo", type="boolean"),
@@ -125,11 +132,11 @@ namespace App\Swagger;
  * @OA\Schema(
  *     schema="CursoInput",
  *     type="object",
- *     required={"nome", "descricao", "programa", "area", "modalidade", "ativo", "centros"},
+ *     required={"nome", "descricao", "modalidade", "ativo", "centros"},
  *     @OA\Property(property="nome", type="string", maxLength=100),
  *     @OA\Property(property="descricao", type="string"),
- *     @OA\Property(property="programa", type="string"),
- *     @OA\Property(property="area", type="string", maxLength=100),
+ *     @OA\Property(property="programa", type="string", nullable=true),
+ *     @OA\Property(property="area", type="string", maxLength=100, nullable=true),
  *     @OA\Property(property="modalidade", type="string", enum={"presencial", "online"}),
  *     @OA\Property(property="imagem_url", type="string", format="uri", nullable=true),
  *     @OA\Property(property="ativo", type="boolean"),

@@ -38,6 +38,7 @@ class CentroController extends Controller
      *     path="/centros",
      *     tags={"Centros"},
      *     summary="Criar um novo centro",
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/CentroInput")
@@ -46,6 +47,10 @@ class CentroController extends Controller
      *         response=201,
      *         description="Centro criado",
      *         @OA\JsonContent(ref="#/components/schemas/Centro")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     )
      * )
      */
@@ -150,6 +155,7 @@ class CentroController extends Controller
      *     path="/centros/{id}",
      *     tags={"Centros"},
      *     summary="Atualizar centro",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -164,6 +170,10 @@ class CentroController extends Controller
      *         response=200,
      *         description="Centro atualizado",
      *         @OA\JsonContent(ref="#/components/schemas/Centro")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -238,6 +248,7 @@ class CentroController extends Controller
      *     path="/centros/{id}",
      *     tags={"Centros"},
      *     summary="Deletar centro",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -247,6 +258,10 @@ class CentroController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Centro deletado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     ),
      *     @OA\Response(
      *         response=404,

@@ -42,6 +42,7 @@ class HorarioController extends Controller
      *     path="/horarios",
      *     tags={"Horários"},
      *     summary="Criar um novo horário",
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/HorarioInput")
@@ -130,6 +131,7 @@ class HorarioController extends Controller
      *     path="/horarios/{id}",
      *     tags={"Horários"},
      *     summary="Atualizar horário (não permite editar curso_id e centro_id)",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -197,6 +199,7 @@ class HorarioController extends Controller
      *     path="/horarios/{id}",
      *     tags={"Horários"},
      *     summary="Deletar horário",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -206,6 +209,10 @@ class HorarioController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Horário deletado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     ),
      *     @OA\Response(
      *         response=404,

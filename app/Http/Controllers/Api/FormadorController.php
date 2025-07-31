@@ -59,6 +59,7 @@ class FormadorController extends Controller
      *     path="/formadores",
      *     tags={"Formadores"},
      *     summary="Criar um novo formador",
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/FormadorInput")
@@ -157,6 +158,7 @@ class FormadorController extends Controller
      *     path="/formadores/{id}",
      *     tags={"Formadores"},
      *     summary="Atualizar formador",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -171,6 +173,10 @@ class FormadorController extends Controller
      *         response=200,
      *         description="Formador atualizado",
      *         @OA\JsonContent(ref="#/components/schemas/Formador")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -234,6 +240,7 @@ class FormadorController extends Controller
      *     path="/formadores/{id}",
      *     tags={"Formadores"},
      *     summary="Deletar formador",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -243,6 +250,10 @@ class FormadorController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Formador deletado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     ),
      *     @OA\Response(
      *         response=404,

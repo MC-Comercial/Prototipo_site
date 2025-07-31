@@ -128,6 +128,7 @@ class CursoController extends Controller
      *     path="/cursos",
      *     tags={"Cursos"},
      *     summary="Criar um novo curso",
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/CursoInput")
@@ -146,8 +147,8 @@ class CursoController extends Controller
         $validated = $request->validate([
             'nome' => 'required|string|max:100',
             'descricao' => 'required|string',
-            'programa' => 'required|string',
-            'area' => 'required|string|max:100',
+            'programa' => 'nullable|string',
+            'area' => 'nullable|string|max:100',
             'modalidade' => 'required|in:presencial,online',
             'imagem_url' => 'nullable|url|max:255',
             'ativo' => 'boolean',
@@ -242,6 +243,7 @@ class CursoController extends Controller
      *     path="/cursos/{id}",
      *     tags={"Cursos"},
      *     summary="Atualizar curso",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -256,6 +258,10 @@ class CursoController extends Controller
      *         response=200,
      *         description="Curso atualizado",
      *         @OA\JsonContent(ref="#/components/schemas/Curso")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -278,8 +284,8 @@ class CursoController extends Controller
         $validated = $request->validate([
             'nome' => 'required|string|max:100',
             'descricao' => 'required|string',
-            'programa' => 'required|string',
-            'area' => 'required|string|max:100',
+            'programa' => 'nullable|string',
+            'area' => 'nullable|string|max:100',
             'modalidade' => 'required|in:presencial,online',
             'imagem_url' => 'nullable|url|max:255',
             'ativo' => 'boolean',
@@ -333,6 +339,7 @@ class CursoController extends Controller
      *     path="/cursos/{id}",
      *     tags={"Cursos"},
      *     summary="Deletar curso",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -344,6 +351,10 @@ class CursoController extends Controller
      *         description="Curso deletado"
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
+     *     ),
+     *     @OA\Response(
      *         response=404,
      *         description="Curso não encontrado"
      *     )
@@ -351,20 +362,30 @@ class CursoController extends Controller
      */
     public function destroy($id)
     {
-        $curso = Curso::find($id);
-
-        if (!$curso) {
+        try {
+            $curso = Curso::findOrFail($id);
+            
+            // Remove as relações primeiro
+            $curso->centros()->detach();
+            $curso->formadores()->detach();
+            
+            $curso->delete();
+    
+            return response()->json([
+                'status' => 'sucesso',
+                'mensagem' => 'Curso deletado com sucesso!'
+            ]);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'status' => 'erro',
-                'mensagem' => 'Curso não encontrado!'
+                'mensagem' => 'Curso não encontrado. Verifique se o ID está correto.'
             ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'erro',
+                'mensagem' => 'Erro ao deletar curso: ' . $e->getMessage()
+            ], 500);
         }
-
-        $curso->delete();
-
-        return response()->json([
-            'status' => 'sucesso',
-            'mensagem' => 'Curso deletado com sucesso!'
-        ]);
     }
 }

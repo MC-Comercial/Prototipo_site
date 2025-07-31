@@ -64,6 +64,7 @@ class CategoriaController extends Controller
      *     path="/categorias",
      *     tags={"Categorias"},
      *     summary="Criar categoria",
+     *     security={{"bearerAuth": {}}},
      *     description="Cria uma nova categoria.",
      *     @OA\RequestBody(
      *         required=true,
@@ -130,6 +131,7 @@ class CategoriaController extends Controller
      *     path="/categorias/{id}",
      *     tags={"Categorias"},
      *     summary="Atualizar categoria",
+     *     security={{"bearerAuth": {}}},
      *     description="Atualiza uma categoria existente.",
      *     @OA\Parameter(
      *         name="id",
@@ -172,6 +174,7 @@ class CategoriaController extends Controller
      *     path="/categorias/{id}",
      *     tags={"Categorias"},
      *     summary="Excluir categoria",
+     *     security={{"bearerAuth": {}}},
      *     description="Exclui uma categoria pelo ID.",
      *     @OA\Parameter(
      *         name="id",
@@ -180,6 +183,7 @@ class CategoriaController extends Controller
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(response=200, description="Categoria excluída com sucesso"),
+     *     @OA\Response(response=401, description="Não autorizado"),
      *     @OA\Response(response=404, description="Categoria não encontrada")
      * )
      */

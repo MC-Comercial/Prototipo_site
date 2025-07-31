@@ -77,10 +77,15 @@ class PreInscricaoController extends Controller
      *     path="/pre-inscricoes",
      *     tags={"Pré-inscrições"},
      *     summary="Listar todas as pré-inscrições",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="Lista de pré-inscrições",
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/PreInscricao"))
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
      *     )
      * )
      */
@@ -96,6 +101,7 @@ class PreInscricaoController extends Controller
      *     path="/pre-inscricoes/{id}",
      *     tags={"Pré-inscrições"},
      *     summary="Atualizar status da pré-inscrição (apenas status)",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -147,6 +153,7 @@ class PreInscricaoController extends Controller
      *     path="/pre-inscricoes/{id}",
      *     tags={"Pré-inscrições"},
      *     summary="Deletar pré-inscrição",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -185,6 +192,7 @@ class PreInscricaoController extends Controller
      *     path="/pre-inscricoes/{id}",
      *     tags={"Pré-inscrições"},
      *     summary="Buscar pré-inscrição por ID",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
+            AdminUserSeeder::class,    // Primeiro criar o admin
             CentroSeeder::class,
             CursoSeeder::class,
             FormadorSeeder::class,

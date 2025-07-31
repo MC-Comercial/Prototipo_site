@@ -12,6 +12,89 @@
         }
     ],
     "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Login do admin",
+                "description": "Autentica o admin e retorna um token de acesso",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@site.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "senha123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login bem sucedido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|LongTokenString"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Autenticação"
+                ],
+                "summary": "Logout do admin",
+                "description": "Remove o token de acesso atual",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
+                "responses": {
+                    "200": {
+                        "description": "Logout realizado com sucesso"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/categorias": {
             "get": {
                 "tags": [
@@ -75,7 +158,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/categorias/{id}": {
@@ -153,7 +241,12 @@
                     "404": {
                         "description": "Categoria não encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -176,10 +269,18 @@
                     "200": {
                         "description": "Categoria excluída com sucesso"
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Categoria não encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/centros": {
@@ -231,8 +332,16 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Não autorizado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/centros/{id}": {
@@ -305,10 +414,18 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Centro não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -330,10 +447,18 @@
                     "200": {
                         "description": "Centro deletado"
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Centro não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/cursos": {
@@ -397,7 +522,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/cursos/{id}": {
@@ -470,10 +600,18 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Curso não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -495,10 +633,18 @@
                     "200": {
                         "description": "Curso deletado"
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Curso não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/formadores": {
@@ -562,7 +708,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/formadores/{id}": {
@@ -635,10 +786,18 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Formador não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -660,10 +819,18 @@
                     "200": {
                         "description": "Formador deletado"
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Formador não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/horarios": {
@@ -716,7 +883,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/horarios/{id}": {
@@ -792,7 +964,12 @@
                     "404": {
                         "description": "Horário não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -814,10 +991,18 @@
                     "200": {
                         "description": "Horário deletado"
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Horário não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/pre-inscricoes": {
@@ -840,8 +1025,16 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Não autorizado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -904,7 +1097,12 @@
                     "404": {
                         "description": "Pré-inscrição não encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -946,7 +1144,12 @@
                     "404": {
                         "description": "Pré-inscrição não encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -971,7 +1174,12 @@
                     "404": {
                         "description": "Pré-inscrição não encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/produtos": {
@@ -1064,7 +1272,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/produtos/{id}": {
@@ -1139,10 +1352,18 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Produto não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -1165,15 +1386,64 @@
                     "200": {
                         "description": "Produto excluído com sucesso"
                     },
+                    "401": {
+                        "description": "Não autorizado"
+                    },
                     "404": {
                         "description": "Produto não encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
     "components": {
         "schemas": {
+            "User": {
+                "required": [
+                    "id",
+                    "name",
+                    "email"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Admin"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "admin@site.com"
+                    },
+                    "email_verified_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "is_admin": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
             "Centro": {
                 "required": [
                     "nome",
@@ -1247,8 +1517,6 @@
                 "required": [
                     "nome",
                     "descricao",
-                    "programa",
-                    "area",
                     "modalidade",
                     "ativo",
                     "centros"
@@ -1266,11 +1534,13 @@
                         "type": "string"
                     },
                     "programa": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "area": {
                         "type": "string",
-                        "maxLength": 100
+                        "maxLength": 100,
+                        "nullable": true
                     },
                     "modalidade": {
                         "type": "string",
@@ -1345,8 +1615,6 @@
                 "required": [
                     "nome",
                     "descricao",
-                    "programa",
-                    "area",
                     "modalidade",
                     "ativo",
                     "centros"
@@ -1360,11 +1628,13 @@
                         "type": "string"
                     },
                     "programa": {
-                        "type": "string"
+                        "type": "string",
+                        "nullable": true
                     },
                     "area": {
                         "type": "string",
-                        "maxLength": 100
+                        "maxLength": 100,
+                        "nullable": true
                     },
                     "modalidade": {
                         "type": "string",
@@ -2047,6 +2317,13 @@
                 },
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
@@ -2077,6 +2354,10 @@
         {
             "name": "Produtos",
             "description": "Operações relacionadas a produtos"
+        },
+        {
+            "name": "Autenticação",
+            "description": "Autenticação"
         }
     ]
 }
