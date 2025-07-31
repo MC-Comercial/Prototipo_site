@@ -50,7 +50,7 @@ php artisan key:generate
 
 7. Execute as migrações e seeds:
 ```bash
-php artisan migrate --seed
+php artisan migrate:fresh --seed
 ```
 
 8. Gere a documentação da API:
