@@ -31,12 +31,9 @@ npm install
 4. Copie o arquivo de ambiente: 
 ```bash
 cp .env.example .env
-
-
-(criar arquivo .env e cola nele tudo que está em .env.example e mude o nome da BD)
 ```
 
-5. Configure o arquivo .env com suas configurações de banco de dados:
+5. Configure o arquivo .env com suas configurações de banco de dados: (Nome da BD: c_formacao_bd)
 ```
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
