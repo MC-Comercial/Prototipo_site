@@ -9,10 +9,58 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 
+/**
+ * @OA\Tag(
+ *     name="Produtos",
+ *     description="Operações relacionadas a produtos"
+ * )
+ */
 class ProdutoController extends Controller
 {
     /**
      * Display a listing of the resource.
+     */
+
+      /**
+     * @OA\Get(
+     *     path="/produtos",
+     *     tags={"Produtos"},
+     *     summary="Listar produtos",
+     *     description="Retorna uma lista de produtos, com filtros opcionais por categoria, tipo, destaque e ativos.",
+     *     @OA\Parameter(
+     *         name="categoria_id",
+     *         in="query",
+     *         description="Filtrar por ID da categoria",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="tipo",
+     *         in="query",
+     *         description="Filtrar por tipo da categoria (loja ou snack)",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="em_destaque",
+     *         in="query",
+     *         description="Filtrar apenas produtos em destaque",
+     *         required=false,
+     *         @OA\Schema(type="boolean")
+     *     ),
+     *     @OA\Parameter(
+     *         name="incluir_inativos",
+     *         in="query",
+     *         description="Incluir produtos inativos (apenas para admin)",
+     *         required=false,
+     *         @OA\Schema(type="boolean")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de produtos",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Produto"))
+     *     )
+     * )
      */
     public function index(Request $request): JsonResponse
     {
@@ -48,6 +96,24 @@ class ProdutoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+        /**
+     * @OA\Post(
+     *     path="/produtos",
+     *     tags={"Produtos"},
+     *     summary="Criar produto",
+     *     description="Cria um novo produto.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/ProdutoInput")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Produto criado",
+     *         @OA\JsonContent(ref="#/components/schemas/Produto")
+     *     )
+     * )
+     */
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -69,6 +135,27 @@ class ProdutoController extends Controller
     /**
      * Display the specified resource.
      */
+
+        /**
+     * @OA\Get(
+     *     path="/produtos/{id}",
+     *     tags={"Produtos"},
+     *     summary="Exibir produto",
+     *     description="Exibe um produto pelo ID.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Produto encontrado",
+     *         @OA\JsonContent(ref="#/components/schemas/Produto")
+     *     ),
+     *     @OA\Response(response=404, description="Produto não encontrado")
+     * )
+     */
     public function show(Produto $produto): JsonResponse
     {
         $produto->load('categoria');
@@ -77,6 +164,30 @@ class ProdutoController extends Controller
 
     /**
      * Update the specified resource in storage.
+     */
+        /**
+     * @OA\Put(
+     *     path="/produtos/{id}",
+     *     tags={"Produtos"},
+     *     summary="Atualizar produto",
+     *     description="Atualiza um produto existente.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/ProdutoInput")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Produto atualizado",
+     *         @OA\JsonContent(ref="#/components/schemas/Produto")
+     *     ),
+     *     @OA\Response(response=404, description="Produto não encontrado")
+     * )
      */
     public function update(Request $request, Produto $produto): JsonResponse
     {
@@ -98,6 +209,23 @@ class ProdutoController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+
+        /**
+     * @OA\Delete(
+     *     path="/produtos/{id}",
+     *     tags={"Produtos"},
+     *     summary="Excluir produto",
+     *     description="Exclui um produto pelo ID.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Produto excluído com sucesso"),
+     *     @OA\Response(response=404, description="Produto não encontrado")
+     * )
      */
     public function destroy(Produto $produto): JsonResponse
     {

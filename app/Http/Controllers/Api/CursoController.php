@@ -6,19 +6,34 @@ use App\Http\Controllers\Controller;
 use App\Models\Curso;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Tag(
+ *     name="Cursos",
+ *     description="Operações relacionadas aos cursos"
+ * )
+ */
 class CursoController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/cursos",
-     *     summary="Listar todos os cursos",
-     *     tags={"Cursos"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Lista de cursos"
-     *     )
-     * )
-     */
+/**
+ * @OA\Get(
+ *     path="/cursos",
+ *     tags={"Cursos"},
+ *     summary="Listar todos os cursos",
+ *     @OA\Parameter(
+ *         name="busca",
+ *         in="query",
+ *         required=false,
+ *         description="Busca textual em múltiplos campos",
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Lista de cursos",
+ *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Curso"))
+ *     )
+ * )
+ */
+
     public function index(Request $request)
     {
         $query = Curso::with(['centros', 'formadores']);
@@ -108,43 +123,24 @@ class CursoController extends Controller
         return response()->json($cursos);
     }
 
-    /**
+        /**
      * @OA\Post(
-     *     path="/api/cursos",
-     *     summary="Criar um novo curso",
+     *     path="/cursos",
      *     tags={"Cursos"},
+     *     summary="Criar um novo curso",
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             required={"nome","descricao","programa","area","modalidade","centros"},
-     *             @OA\Property(property="nome", type="string", example="Informática Básica"),
-     *             @OA\Property(property="descricao", type="string", example="Curso de introdução à informática."),
-     *             @OA\Property(property="programa", type="string", example="Windows, Word, Excel"),
-     *             @OA\Property(property="area", type="string", example="Tecnologia"),
-     *             @OA\Property(property="modalidade", type="string", enum={"presencial","online"}, example="presencial"),
-     *             @OA\Property(property="imagem_url", type="string", example="https://exemplo.com/imagem.jpg"),
-     *             @OA\Property(property="ativo", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="centros",
-     *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     required={"centro_id","preco","duracao"},
-     *                     @OA\Property(property="centro_id", type="integer", example=1),
-     *                     @OA\Property(property="preco", type="number", example=10000),
-     *                     @OA\Property(property="duracao", type="string", example="2 meses"),
-     *                     @OA\Property(property="data_arranque", type="string", format="date", example="2025-08-01")
-     *                 )
-     *             ),
-     *             @OA\Property(property="formadores", type="array", @OA\Items(type="integer"))
-     *         )
+     *         @OA\JsonContent(ref="#/components/schemas/CursoInput")
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Curso cadastrado com sucesso"
+     *         description="Curso criado",
+     *         @OA\JsonContent(ref="#/components/schemas/Curso")
      *     )
      * )
      */
+
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -201,11 +197,11 @@ class CursoController extends Controller
         ], 201);
     }
 
-    /**
+      /**
      * @OA\Get(
-     *     path="/api/cursos/{id}",
-     *     summary="Buscar curso por ID",
+     *     path="/cursos/{id}",
      *     tags={"Cursos"},
+     *     summary="Buscar curso por ID",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -214,7 +210,8 @@ class CursoController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Curso encontrado"
+     *         description="Curso encontrado",
+     *         @OA\JsonContent(ref="#/components/schemas/Curso")
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -222,6 +219,7 @@ class CursoController extends Controller
      *     )
      * )
      */
+
     public function show($id)
     {
         $curso = Curso::with(['centros', 'formadores'])->find($id);
@@ -239,11 +237,11 @@ class CursoController extends Controller
         ]);
     }
 
-    /**
+      /**
      * @OA\Put(
-     *     path="/api/cursos/{id}",
-     *     summary="Atualizar curso",
+     *     path="/cursos/{id}",
      *     tags={"Cursos"},
+     *     summary="Atualizar curso",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -252,33 +250,12 @@ class CursoController extends Controller
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             required={"nome","descricao","programa","area","modalidade","centros"},
-     *             @OA\Property(property="nome", type="string", example="Informática Básica"),
-     *             @OA\Property(property="descricao", type="string", example="Curso de introdução à informática."),
-     *             @OA\Property(property="programa", type="string", example="Windows, Word, Excel"),
-     *             @OA\Property(property="area", type="string", example="Tecnologia"),
-     *             @OA\Property(property="modalidade", type="string", enum={"presencial","online"}, example="presencial"),
-     *             @OA\Property(property="imagem_url", type="string", example="https://exemplo.com/imagem.jpg"),
-     *             @OA\Property(property="ativo", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="centros",
-     *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     required={"centro_id","preco","duracao"},
-     *                     @OA\Property(property="centro_id", type="integer", example=1),
-     *                     @OA\Property(property="preco", type="number", example=10000),
-     *                     @OA\Property(property="duracao", type="string", example="2 meses"),
-     *                     @OA\Property(property="data_arranque", type="string", format="date", example="2025-08-01")
-     *                 )
-     *             ),
-     *             @OA\Property(property="formadores", type="array", @OA\Items(type="integer"))
-     *         )
+     *         @OA\JsonContent(ref="#/components/schemas/CursoInput")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Curso atualizado com sucesso"
+     *         description="Curso atualizado",
+     *         @OA\JsonContent(ref="#/components/schemas/Curso")
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -286,6 +263,7 @@ class CursoController extends Controller
      *     )
      * )
      */
+
     public function update(Request $request, $id)
     {
         $curso = Curso::find($id);
@@ -350,12 +328,11 @@ class CursoController extends Controller
             'dados' => $curso
         ]);
     }
-
     /**
      * @OA\Delete(
-     *     path="/api/cursos/{id}",
-     *     summary="Deletar curso",
+     *     path="/cursos/{id}",
      *     tags={"Cursos"},
+     *     summary="Deletar curso",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -364,7 +341,7 @@ class CursoController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Curso deletado com sucesso"
+     *         description="Curso deletado"
      *     ),
      *     @OA\Response(
      *         response=404,

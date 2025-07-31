@@ -6,49 +6,49 @@ use App\Http\Controllers\Controller;
 use App\Models\Centro;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Tag(
+ *     name="Centros",
+ *     description="Operações relacionadas aos centros"
+ * )
+ */
 class CentroController extends Controller
 {
     //
-
     /**
- * @OA\Get(
- *     path="/api/centros",
- *     summary="Listar todos os centros",
- *     tags={"Centros"},
- *     @OA\Response(
- *         response=200,
- *         description="Lista de centros"
- *     )
- * )
- */
+     * @OA\Get(
+     *     path="/centros",
+     *     tags={"Centros"},
+     *     summary="Listar todos os centros",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de centros",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Centro"))
+     *     )
+     * )
+     */
     public function index()
     {
         // Retorna todos os centros diretamente como array
         return response()->json(Centro::all());
     }
 
-/**
- * @OA\Post(
- *     path="/api/centros",
- *     summary="Criar um novo centro",
- *     tags={"Centros"},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             required={"nome","localizacao","contactos"},
- *             @OA\Property(property="nome", type="string", example="Centro Alpha"),
- *             @OA\Property(property="localizacao", type="string", example="Luanda"),
- *             @OA\Property(property="contactos", type="array", @OA\Items(type="string", example="923111111")),
- *             @OA\Property(property="email", type="string", example="alpha@centro.com")
- *         )
- *     ),
- *     @OA\Response(
- *         response=201,
- *         description="Centro cadastrado com sucesso"
- *     )
- * )
- */
-
+    /**
+     * @OA\Post(
+     *     path="/centros",
+     *     tags={"Centros"},
+     *     summary="Criar um novo centro",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CentroInput")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Centro criado",
+     *         @OA\JsonContent(ref="#/components/schemas/Centro")
+     *     )
+     * )
+     */
     // Criar
     public function store(Request $request)
     {
@@ -102,28 +102,28 @@ class CentroController extends Controller
     }
 
     // Busca por ID com cursos e formadores associados
-
     /**
- * @OA\Get(
- *     path="/api/centros/{id}",
- *     summary="Buscar centro por ID",
- *     tags={"Centros"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Centro encontrado"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Centro não encontrado"
- *     )
- * )
- */
+     * @OA\Get(
+     *     path="/centros/{id}",
+     *     tags={"Centros"},
+     *     summary="Buscar centro por ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Centro encontrado",
+     *         @OA\JsonContent(ref="#/components/schemas/Centro")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Centro não encontrado"
+     *     )
+     * )
+     */
     public function show($id)
     {
         // Busca o centro pelo ID, incluindo cursos e formadores relacionados
@@ -145,38 +145,33 @@ class CentroController extends Controller
     }
 
     // Editar
-
     /**
- * @OA\Put(
- *     path="/api/centros/{id}",
- *     summary="Atualizar centro",
- *     tags={"Centros"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             required={"nome","localizacao","contactos"},
- *             @OA\Property(property="nome", type="string", example="Centro Beta"),
- *             @OA\Property(property="localizacao", type="string", example="Benguela"),
- *             @OA\Property(property="contactos", type="array", @OA\Items(type="string", example="923222222")),
- *             @OA\Property(property="email", type="string", example="beta@centro.com")
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Centro atualizado com sucesso"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Centro não encontrado"
- *     )
- * )
- */
+     * @OA\Put(
+     *     path="/centros/{id}",
+     *     tags={"Centros"},
+     *     summary="Atualizar centro",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CentroInput")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Centro atualizado",
+     *         @OA\JsonContent(ref="#/components/schemas/Centro")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Centro não encontrado"
+     *     )
+     * )
+     */
+ 
     public function update(Request $request, $id)
     {
         $centro = Centro::find($id);
@@ -238,28 +233,27 @@ class CentroController extends Controller
     }
 
     // Deletar
-
     /**
- * @OA\Delete(
- *     path="/api/centros/{id}",
- *     summary="Deletar centro",
- *     tags={"Centros"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Centro deletado com sucesso"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Centro não encontrado"
- *     )
- * )
- */
+     * @OA\Delete(
+     *     path="/centros/{id}",
+     *     tags={"Centros"},
+     *     summary="Deletar centro",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Centro deletado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Centro não encontrado"
+     *     )
+     * )
+     */
     public function destroy($id)
     {
         $centro = Centro::find($id);

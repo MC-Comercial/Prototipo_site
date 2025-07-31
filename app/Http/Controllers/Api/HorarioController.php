@@ -7,21 +7,29 @@ use App\Models\Horario;
 use App\Models\Curso;
 use Illuminate\Http\Request;
 
-class HorarioController extends Controller
-{
-    //
-    /**
- * @OA\Get(
- *     path="/api/horarios",
- *     summary="Listar todos os horários",
- *     tags={"Horários"},
- *     @OA\Response(
- *         response=200,
- *         description="Lista de horários"
- *     )
+/**
+ * @OA\Tag(
+ *     name="Horários",
+ *     description="Operações relacionadas aos horários de cursos"
  * )
  */
-     public function index()
+class HorarioController extends Controller
+{
+
+
+    /**
+     * @OA\Get(
+     *     path="/horarios",
+     *     tags={"Horários"},
+     *     summary="Listar todos os horários",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de horários",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Horario"))
+     *     )
+     * )
+     */
+    public function index()
     {
         $horarios = Horario::with('curso')->get();
         return response()->json($horarios);
@@ -29,28 +37,22 @@ class HorarioController extends Controller
 
 
 
-/**
- * @OA\Post(
- *     path="/api/horarios",
- *     summary="Criar um novo horário",
- *     tags={"Horários"},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             required={"curso_id","dia_semana","periodo","hora_inicio","hora_fim"},
- *             @OA\Property(property="curso_id", type="integer", example=1),
- *             @OA\Property(property="dia_semana", type="string", example="Segunda"),
- *             @OA\Property(property="periodo", type="string", example="manhã"),
- *             @OA\Property(property="hora_inicio", type="string", example="08:00"),
- *             @OA\Property(property="hora_fim", type="string", example="10:00")
- *         )
- *     ),
- *     @OA\Response(
- *         response=201,
- *         description="Horário cadastrado com sucesso"
- *     )
- * )
- */
+    /**
+     * @OA\Post(
+     *     path="/horarios",
+     *     tags={"Horários"},
+     *     summary="Criar um novo horário",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/HorarioInput")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Horário criado",
+     *         @OA\JsonContent(ref="#/components/schemas/Horario")
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -86,108 +88,93 @@ class HorarioController extends Controller
     }
 
 
+
     /**
- * @OA\Get(
- *     path="/api/horarios/{id}",
- *     summary="Buscar horário por ID",
- *     tags={"Horários"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Horário encontrado"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Horário não encontrado"
- *     )
- * )
- */
+     * @OA\Get(
+     *     path="/horarios/{id}",
+     *     tags={"Horários"},
+     *     summary="Buscar horário por ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Horário encontrado",
+     *         @OA\JsonContent(ref="#/components/schemas/Horario")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Horário não encontrado"
+     *     )
+     * )
+     */
     public function show($id)
     {
         $horario = Horario::with('curso')->find($id);
-
         if (!$horario) {
             return response()->json([
                 'status' => 'erro',
                 'mensagem' => 'Horário não encontrado!'
             ], 404);
         }
-
         return response()->json(['status' => 'sucesso', 'dados' => $horario]);
     }
 
 
+
     /**
- * @OA\Put(
- *     path="/api/horarios/{id}",
- *     summary="Atualizar horário",
- *     tags={"Horários"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(
- *             required={"curso_id","dia_semana","periodo","hora_inicio","hora_fim"},
- *             @OA\Property(property="curso_id", type="integer", example=1),
- *             @OA\Property(property="dia_semana", type="string", example="Segunda"),
- *             @OA\Property(property="periodo", type="string", example="manhã"),
- *             @OA\Property(property="hora_inicio", type="string", example="08:00"),
- *             @OA\Property(property="hora_fim", type="string", example="10:00")
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Horário atualizado com sucesso"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Horário não encontrado"
- *     )
- * )
- */
+     * @OA\Put(
+     *     path="/horarios/{id}",
+     *     tags={"Horários"},
+     *     summary="Atualizar horário (não permite editar curso_id e centro_id)",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/HorarioUpdateInput")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Horário atualizado",
+     *         @OA\JsonContent(ref="#/components/schemas/Horario")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Horário não encontrado"
+     *     )
+     * )
+     */
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'curso_id' => 'required|exists:cursos,id',
-            'centro_id' => 'required|exists:centros,id',
-            'dia_semana' => 'required|in:Segunda,Terça,Quarta,Quinta,Sexta,Sábado,Domingo',
-            'periodo' => 'required|in:manhã,tarde,noite',
-            'hora_inicio' => 'required|date_format:H:i',
-            'hora_fim' => 'required|date_format:H:i|after:hora_inicio'
-        ]);
-        
         $horario = Horario::find($id);
-
         if (!$horario) {
             return response()->json([
                 'status' => 'erro',
                 'mensagem' => 'Horário não encontrado!'
             ], 404);
         }
-
+        // Não permite editar curso_id e centro_id
         $validated = $request->validate([
-            'curso_id' => 'required|exists:cursos,id',
             'dia_semana' => 'required|in:Segunda,Terça,Quarta,Quinta,Sexta,Sábado,Domingo',
             'periodo' => 'required|in:manhã,tarde,noite',
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fim' => 'required|date_format:H:i|after:hora_inicio'
         ]);
-
         // Garantir formato correto das horas
         $validated['hora_inicio'] = date('H:i', strtotime($validated['hora_inicio']));
         $validated['hora_fim'] = date('H:i', strtotime($validated['hora_fim']));
-
         // Verificar conflitos de horário (ignorando o horário atual)
-        $conflitos = $this->verificarConflitosHorario($validated, $id);
+        $dadosConflito = array_merge($validated, [
+            'curso_id' => $horario->curso_id
+        ]);
+        $conflitos = $this->verificarConflitosHorario($dadosConflito, $id);
         if (!empty($conflitos)) {
             return response()->json([
                 'status' => 'erro',
@@ -195,9 +182,7 @@ class HorarioController extends Controller
                 'conflitos' => $conflitos
             ], 422);
         }
-
         $horario->update($validated);
-
         return response()->json([
             'status' => 'sucesso',
             'mensagem' => 'Horário atualizado com sucesso!',
@@ -206,40 +191,38 @@ class HorarioController extends Controller
     }
 
 
+
     /**
- * @OA\Delete(
- *     path="/api/horarios/{id}",
- *     summary="Deletar horário",
- *     tags={"Horários"},
- *     @OA\Parameter(
- *         name="id",
- *         in="path",
- *         required=true,
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Horário deletado com sucesso"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Horário não encontrado"
- *     )
- * )
- */
+     * @OA\Delete(
+     *     path="/horarios/{id}",
+     *     tags={"Horários"},
+     *     summary="Deletar horário",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Horário deletado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Horário não encontrado"
+     *     )
+     * )
+     */
     public function destroy($id)
     {
         $horario = Horario::find($id);
-
         if (!$horario) {
             return response()->json([
                 'status' => 'erro',
                 'mensagem' => 'Horário não encontrado!'
             ], 404);
         }
-
         $horario->delete();
-
         return response()->json([
             'status' => 'sucesso',
             'mensagem' => 'Horário deletado com sucesso!'
