@@ -9,7 +9,7 @@ class CategoriaController extends Controller
 {
     public function index()
     {
-        $categorias = Categoria::all();
+        $categorias = Categoria::with(['produtos'])->get();
         return view('categorias.index', compact('categorias'));
     }
 
@@ -29,7 +29,7 @@ class CategoriaController extends Controller
 
     public function show($id)
     {
-        $categoria = Categoria::findOrFail($id);
+        $categoria = Categoria::with(['produtos'])->findOrFail($id);
         return view('categorias.show', compact('categoria'));
     }
 

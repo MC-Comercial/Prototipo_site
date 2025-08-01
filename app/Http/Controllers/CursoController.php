@@ -9,7 +9,7 @@ class CursoController extends Controller
 {
     public function index()
     {
-        $cursos = Curso::all();
+        $cursos = Curso::with(['centros', 'formadores', 'horarios', 'preInscricoes'])->get();
         return view('cursos.index', compact('cursos'));
     }
 
@@ -30,7 +30,7 @@ class CursoController extends Controller
 
     public function show($id)
     {
-        $curso = Curso::findOrFail($id);
+        $curso = Curso::with(['centros', 'formadores', 'horarios', 'preInscricoes'])->findOrFail($id);
         return view('cursos.show', compact('curso'));
     }
 

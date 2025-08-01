@@ -1,125 +1,116 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('title', 'Dashboard')
 
 @section('content')
 <div class="container-fluid">
-    <!-- ==============================================
-         CABEÇALHO DA PÁGINA DASHBOARD
-         ============================================== -->
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="h3 mb-3">
+            <h1 class="display-6 mb-3">
                 <i class="fas fa-tachometer-alt me-3 text-primary"></i>Dashboard
             </h1>
-            <p class="text-muted">Visão geral do sistema de gestão MC-COMERCIAL</p>
+            <p class="text-muted">Visão geral do sistema de gestão de formação</p>
         </div>
     </div>
 
-    <!-- ==============================================
-         SEÇÃO: CARDS DE ESTATÍSTICAS PRINCIPAIS
-         ============================================== -->
+    <!-- Cards de Estatísticas -->
     <div class="row mb-5">
-        <!-- CARD 1: ESTATÍSTICA DE CURSOS -->
         <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card stats-card h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-0 opacity-75">Total de Cursos</h6>
-                            <h2 class="display-6 fw-bold mb-0" id="total-cursos">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </h2>
-                            <small class="opacity-75">Cursos ativos no sistema</small>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-primary mb-0">Total de Cursos</h5>
+                            <h2 class="display-6 fw-bold mb-0" id="total-cursos">-</h2>
                         </div>
-                        <div class="fs-1 opacity-25">
+                        <div class="fs-1 text-primary opacity-25">
                             <i class="fas fa-book"></i>
                         </div>
                     </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 75%"></div>
+                    </div>
+                    <small class="text-muted mt-2">Cursos ativos no sistema</small>
                 </div>
             </div>
         </div>
 
-        <!-- CARD 2: ESTATÍSTICA DE CENTROS -->
         <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card stats-card success h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-0 opacity-75">Centros</h6>
-                            <h2 class="display-6 fw-bold mb-0" id="total-centros">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </h2>
-                            <small class="opacity-75">Centros registados</small>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-success mb-0">Centros</h5>
+                            <h2 class="display-6 fw-bold mb-0" id="total-centros">-</h2>
                         </div>
-                        <div class="fs-1 opacity-25">
+                        <div class="fs-1 text-success opacity-25">
                             <i class="fas fa-building"></i>
                         </div>
                     </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 60%"></div>
+                    </div>
+                    <small class="text-muted mt-2">Centros registados</small>
                 </div>
             </div>
         </div>
 
-        <!-- CARD 3: ESTATÍSTICA DE FORMADORES -->
         <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card stats-card info h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-0 opacity-75">Formadores</h6>
-                            <h2 class="display-6 fw-bold mb-0" id="total-formadores">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </h2>
-                            <small class="opacity-75">Formadores registados</small>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-info mb-0">Formadores</h5>
+                            <h2 class="display-6 fw-bold mb-0" id="total-formadores">-</h2>
                         </div>
-                        <div class="fs-1 opacity-25">
+                        <div class="fs-1 text-info opacity-25">
                             <i class="fas fa-chalkboard-teacher"></i>
                         </div>
                     </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 85%"></div>
+                    </div>
+                    <small class="text-muted mt-2">Formadores registados</small>
                 </div>
             </div>
         </div>
 
-        <!-- CARD 4: ESTATÍSTICA DE PRÉ-INSCRIÇÕES -->
         <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card stats-card warning h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-0 opacity-75">Pré-Inscrições</h6>
-                            <h2 class="display-6 fw-bold mb-0" id="total-pre-inscricoes">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </h2>
-                            <small class="opacity-75">Pendentes de aprovação</small>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-warning mb-0">Pré-Inscrições</h5>
+                            <h2 class="display-6 fw-bold mb-0" id="total-pre-inscricoes">-</h2>
                         </div>
-                        <div class="fs-1 opacity-25">
+                        <div class="fs-1 text-warning opacity-25">
                             <i class="fas fa-user-plus"></i>
                         </div>
                     </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 90%"></div>
+                    </div>
+                    <small class="text-muted mt-2">Pendentes de aprovação</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ==============================================
-         SEÇÃO: GRÁFICOS E INFORMAÇÕES DETALHADAS
-         ============================================== -->
+    <!-- Gráficos e Informações Adicionais -->
     <div class="row">
-        <!-- ÚLTIMAS PRÉ-INSCRIÇÕES -->
         <div class="col-lg-8 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-light-custom">
+                <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-chart-line me-2 text-primary"></i>Últimas Pré-Inscrições
+                        <i class="fas fa-chart-line me-2"></i>Últimas Pré-Inscrições
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>Nome</th>
-                                    <th>Email</th>
                                     <th>Curso</th>
                                     <th>Centro</th>
                                     <th>Data</th>
@@ -128,34 +119,28 @@
                             </thead>
                             <tbody id="ultimas-inscricoes">
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
-                                        <i class="fas fa-spinner fa-spin me-2"></i>Carregando dados...
+                                    <td colspan="5" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Carregando...
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="text-end mt-3">
-                        <a href="{{ route('pre-inscricoes.index') }}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-eye me-1"></i>Ver Todas
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ESTATÍSTICAS RÁPIDAS -->
         <div class="col-lg-4 mb-4">
             <div class="card h-100">
-                <div class="card-header bg-light-custom">
+                <div class="card-header bg-success text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-chart-pie me-2 text-primary"></i>Distribuição por Modalidade
+                        <i class="fas fa-chart-pie me-2"></i>Estatísticas Rápidas
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-muted">Cursos Online</span>
+                            <span>Cursos Online</span>
                             <span class="badge bg-primary" id="cursos-online">0</span>
                         </div>
                         <div class="progress mb-3" style="height: 8px;">
@@ -165,7 +150,7 @@
 
                     <div class="mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-muted">Cursos Presenciais</span>
+                            <span>Cursos Presenciais</span>
                             <span class="badge bg-success" id="cursos-presencial">0</span>
                         </div>
                         <div class="progress mb-3" style="height: 8px;">
@@ -175,7 +160,7 @@
 
                     <div class="mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-muted">Pré-Inscrições Pendentes</span>
+                            <span>Pendentes</span>
                             <span class="badge bg-warning text-dark" id="pendentes">0</span>
                         </div>
                         <div class="progress mb-3" style="height: 8px;">
@@ -184,11 +169,8 @@
                     </div>
 
                     <div class="text-center mt-4">
-                        <a href="{{ route('cursos.index') }}" class="btn btn-outline-primary btn-sm me-2">
-                            <i class="fas fa-book me-1"></i>Gerir Cursos
-                        </a>
-                        <a href="{{ route('pre-inscricoes.index') }}" class="btn btn-outline-warning btn-sm">
-                            <i class="fas fa-user-plus me-1"></i>Ver Pendentes
+                        <a href="{{ route('pre-inscricoes.index') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>Ver Detalhes
                         </a>
                     </div>
                 </div>
@@ -196,41 +178,39 @@
         </div>
     </div>
 
-    <!-- ==============================================
-         SEÇÃO: AÇÕES RÁPIDAS
-         ============================================== -->
+    <!-- Ações Rápidas -->
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header bg-light-custom">
+                <div class="card-header bg-dark text-white">
                     <h5 class="mb-0">
-                        <i class="fas fa-bolt me-2 text-primary"></i>Ações Rápidas
+                        <i class="fas fa-bolt me-2"></i>Ações Rápidas
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-3 col-md-6 mb-3">
-                            <a href="{{ route('cursos.create') }}" class="btn btn-primary w-100 py-3 text-decoration-none">
+                            <a href="{{ route('cursos.create') }}" class="btn btn-primary w-100 py-3">
                                 <i class="fas fa-plus-circle fa-2x mb-2 d-block"></i>
-                                <span class="fw-semibold">Novo Curso</span>
+                                Novo Curso
                             </a>
                         </div>
                         <div class="col-lg-3 col-md-6 mb-3">
-                            <a href="{{ route('centros.create') }}" class="btn btn-success w-100 py-3 text-decoration-none">
+                            <a href="{{ route('centros.create') }}" class="btn btn-success w-100 py-3">
                                 <i class="fas fa-building fa-2x mb-2 d-block"></i>
-                                <span class="fw-semibold">Novo Centro</span>
+                                Novo Centro
                             </a>
                         </div>
                         <div class="col-lg-3 col-md-6 mb-3">
-                            <a href="{{ route('formadores.create') }}" class="btn btn-info w-100 py-3 text-decoration-none">
+                            <a href="{{ route('formadores.create') }}" class="btn btn-info w-100 py-3">
                                 <i class="fas fa-user-plus fa-2x mb-2 d-block"></i>
-                                <span class="fw-semibold">Novo Formador</span>
+                                Novo Formador
                             </a>
                         </div>
                         <div class="col-lg-3 col-md-6 mb-3">
-                            <a href="{{ route('horarios.create') }}" class="btn btn-warning w-100 py-3 text-decoration-none">
+                            <a href="{{ route('horarios.create') }}" class="btn btn-warning w-100 py-3">
                                 <i class="fas fa-clock fa-2x mb-2 d-block"></i>
-                                <span class="fw-semibold">Novo Horário</span>
+                                Novo Horário
                             </a>
                         </div>
                     </div>
@@ -241,7 +221,7 @@
 </div>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 $(document).ready(function() {
     carregarEstatisticas();
@@ -250,106 +230,74 @@ $(document).ready(function() {
 
 function carregarEstatisticas() {
     // Carregar total de cursos
-    $.get('{{ route("api.cursos.index") }}')
-        .done(function(data) {
-            $('#total-cursos').text(data.length);
-            
-            const online = data.filter(curso => curso.modalidade === 'online').length;
-            const presencial = data.filter(curso => curso.modalidade === 'presencial').length;
-            const total = data.length;
-            
-            $('#cursos-online').text(online);
-            $('#cursos-presencial').text(presencial);
-            
-            if (total > 0) {
-                $('#progress-online').css('width', (online / total * 100) + '%');
-                $('#progress-presencial').css('width', (presencial / total * 100) + '%');
-            }
-        })
-        .fail(function() {
-            $('#total-cursos').text('N/A');
-        });
+    $.get('/api/cursos', function(data) {
+        $('#total-cursos').text(data.length);
+        
+        const online = data.filter(curso => curso.modalidade === 'online').length;
+        const presencial = data.filter(curso => curso.modalidade === 'presencial').length;
+        const total = data.length;
+        
+        $('#cursos-online').text(online);
+        $('#cursos-presencial').text(presencial);
+        
+        if (total > 0) {
+            $('#progress-online').css('width', (online / total * 100) + '%');
+            $('#progress-presencial').css('width', (presencial / total * 100) + '%');
+        }
+    });
     
     // Carregar total de centros
-    $.get('{{ route("api.centros.index") }}')
-        .done(function(data) {
-            $('#total-centros').text(data.length);
-        })
-        .fail(function() {
-            $('#total-centros').text('N/A');
-        });
+    $.get('/api/centros', function(data) {
+        $('#total-centros').text(data.length);
+    });
     
     // Carregar total de formadores
-    $.get('{{ route("api.formadores.index") }}')
-        .done(function(data) {
-            $('#total-formadores').text(data.length);
-        })
-        .fail(function() {
-            $('#total-formadores').text('N/A');
-        });
+    $.get('/api/formadores', function(data) {
+        $('#total-formadores').text(data.length);
+    });
     
     // Carregar pré-inscrições
-    $.get('{{ route("api.pre-inscricoes.index") }}')
-        .done(function(data) {
-            const pendentes = data.filter(inscricao => inscricao.status === 'pendente').length;
-            $('#total-pre-inscricoes').text(pendentes);
-            $('#pendentes').text(pendentes);
-            
-            if (data.length > 0) {
-                $('#progress-pendentes').css('width', (pendentes / data.length * 100) + '%');
-            }
-        })
-        .fail(function() {
-            $('#total-pre-inscricoes').text('N/A');
-        });
+    $.get('/api/pre-inscricoes', function(data) {
+        const pendentes = data.filter(inscricao => inscricao.status === 'pendente').length;
+        $('#total-pre-inscricoes').text(pendentes);
+        $('#pendentes').text(pendentes);
+        
+        if (data.length > 0) {
+            $('#progress-pendentes').css('width', (pendentes / data.length * 100) + '%');
+        }
+    });
 }
 
 function carregarUltimasInscricoes() {
-    $.get('{{ route("api.pre-inscricoes.index") }}')
-        .done(function(data) {
-            let html = '';
+    $.get('/api/pre-inscricoes', function(data) {
+        let html = '';
+        
+        if (data.length === 0) {
+            html = '<tr><td colspan="5" class="text-center text-muted">Nenhuma pré-inscrição encontrada</td></tr>';
+        } else {
+            // Mostrar apenas as últimas 5
+            const ultimas = data.slice(0, 5);
             
-            if (data.length === 0) {
-                html = '<tr><td colspan="6" class="text-center text-muted py-4">Nenhuma pré-inscrição encontrada</td></tr>';
-            } else {
-                // Mostrar apenas as últimas 5
-                const ultimas = data.slice(0, 5);
-                
-                ultimas.forEach(function(inscricao) {
-                    const statusClass = getStatusClass(inscricao.status);
-                    const statusText = getStatusText(inscricao.status);
-                    const data_formatada = new Date(inscricao.created_at).toLocaleDateString('pt-PT');
-                    
-                    html += `
-                        <tr>
-                            <td>
-                                <div class="fw-semibold">${inscricao.nome_completo}</div>
-                            </td>
-                            <td>
-                                <small class="text-muted">${inscricao.email}</small>
-                            </td>
-                            <td>
-                                <small class="text-muted">ID: ${inscricao.curso_id}</small>
-                            </td>
-                            <td>
-                                <small class="text-muted">ID: ${inscricao.centro_id}</small>
-                            </td>
-                            <td>
-                                <small class="text-muted">${data_formatada}</small>
-                            </td>
-                            <td>
-                                <span class="badge ${statusClass}">${statusText}</span>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-            
-            $('#ultimas-inscricoes').html(html);
-        })
-        .fail(function() {
-            $('#ultimas-inscricoes').html('<tr><td colspan="6" class="text-center text-danger py-4">Erro ao carregar dados</td></tr>');
-        });
+            ultimas.forEach(function(inscricao) {
+                const statusClass = getStatusClass(inscricao.status);
+                const statusText = getStatusText(inscricao.status);
+                const data_formatada = new Date(inscricao.created_at).toLocaleDateString('pt-PT');
+                const cursoNome = inscricao.curso ? inscricao.curso.nome : `#${inscricao.curso_id}`;
+                const centroNome = inscricao.centro ? inscricao.centro.nome : `#${inscricao.centro_id}`;
+                html += `
+                    <tr>
+                        <td>${inscricao.nome_completo}</td>
+                        <td><small class="text-muted">${cursoNome}</small></td>
+                        <td><small class="text-muted">${centroNome}</small></td>
+                        <td><small>${data_formatada}</small></td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+        }
+        
+        $('#ultimas-inscricoes').html(html);
+    });
 }
 
 function getStatusClass(status) {
@@ -370,4 +318,4 @@ function getStatusText(status) {
     }
 }
 </script>
-@endpush
+@endsection

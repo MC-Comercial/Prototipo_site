@@ -29,7 +29,7 @@ class SiteController extends Controller
      */
     public function centro(Centro $centro)
     {
-        return view('site.centro', compact('centro'));
+        return view('site.centro-detalhes', compact('centro'));
     }
 
     /**

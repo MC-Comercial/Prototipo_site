@@ -33,20 +33,10 @@ Route::get('/site/contactos', [SiteController::class, 'contactos'])->name('site.
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-});
-
-// Rota de login simples para teste
-Route::get('/simple-login', function() {
-    return '<h1>Login Page</h1><form method="POST" action="/login">' . csrf_field() . '<input name="email" placeholder="Email" required><input name="password" type="password" placeholder="Password" required><button type="submit">Login</button></form>';
-})->middleware('guest')->name('simple.login');
-
-// Rotas de teste para debug
-Route::get('/test-login', function() {
-    return 'Login route is working!';
-});
+// Rota apenas para exibir a página de login
+Route::get('/login', function () {
+    return view('auth.login_new');
+})->name('login');
 
 Route::get('/debug-routes', function() {
     $routes = collect(\Route::getRoutes())->map(function ($route) {
@@ -59,10 +49,6 @@ Route::get('/debug-routes', function() {
     });
     
     return response()->json($routes);
-});
-
-Route::middleware('auth')->group(function () {
-    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
 
 /*

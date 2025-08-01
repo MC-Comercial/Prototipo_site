@@ -29,8 +29,8 @@ class CentroController extends Controller
      */
     public function index()
     {
-        // Retorna todos os centros diretamente como array
-        return response()->json(Centro::all());
+        // Retorna todos os centros com relacionamentos relevantes
+        return response()->json(Centro::with(['cursos', 'formadores'])->get());
     }
 
     /**

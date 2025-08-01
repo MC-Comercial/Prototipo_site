@@ -189,8 +189,8 @@
                     </div>
                 @endif
                 
-                <form method="POST" action="{{ route('login') }}">
-                    @csrf
+                <form id="loginForm" onsubmit="return false;">
+                    <div id="loginError" class="alert alert-danger d-none"></div>
                     
                     <div class="mb-3">
                         <label for="email" class="form-label">Endereço de Email</label>
@@ -199,17 +199,13 @@
                                 <i class="fas fa-envelope"></i>
                             </span>
                             <input type="email" 
-                                   class="form-control @error('email') is-invalid @enderror" 
+                                   class="form-control" 
                                    id="email" 
                                    name="email" 
-                                   value="{{ old('email') }}" 
                                    required 
                                    autofocus 
                                    placeholder="Digite seu email">
                         </div>
-                        @error('email')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                        @enderror
                     </div>
                     
                     <div class="mb-3">
@@ -252,5 +248,89 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        // Remover qualquer token antigo ao carregar a página de login
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Função para verificar o token
+        function verificarToken(token) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: '/api/user',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                        resolve(response);
+                    },
+                    error: function(xhr) {
+                        reject(xhr);
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function() {
+            // Flag para controlar se já verificamos o token
+            let tokenVerificado = false;
+
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const email = $('#email').val();
+                const password = $('#password').val();
+                
+                $('#loginError').addClass('d-none').text('');
+                
+                $.ajax({
+                    url: '/api/login',
+                    method: 'POST',
+                    data: {
+                        email: email,
+                        password: password,
+                        remember: $('#remember').is(':checked')
+                    },
+                    success: function(response) {
+                        localStorage.setItem('auth_token', response.token);
+                        window.location.href = '/dashboard';
+                    },
+                    error: function(xhr) {
+                        let msg = 'Erro ao autenticar. Verifique suas credenciais.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        $('#loginError').removeClass('d-none').text(msg);
+                    }
+                });
+            });
+            
+            // Verificar token apenas uma vez ao carregar a página
+            if (!tokenVerificado) {
+                tokenVerificado = true;
+                const token = localStorage.getItem('auth_token');
+                
+                if (token) {
+                    verificarToken(token)
+                        .then(response => {
+                            if (response && response.id) {
+                                window.location.href = '/dashboard';
+                            } else {
+                                localStorage.removeItem('auth_token');
+                            }
+                        })
+                        .catch(() => {
+                            localStorage.removeItem('auth_token');
+                        });
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,7 +1,6 @@
-@extends('layouts.site')
+@extends('layouts.public')
 
 @section('title', 'Contactos')
-@section('description', 'Entre em contacto com a MC-COMERCIAL para esclarecer dúvidas ou solicitar informações')
 
 @section('content')
 <!-- Breadcrumb -->
@@ -39,9 +38,8 @@
                         </div>
                         <h5>Telefone</h5>
                         <p class="text-muted mb-2">Ligue-nos durante o horário de funcionamento</p>
-                        <p class="fw-bold">+244 928-966-002</p>
-                        <p class="fw-bold">+244 929-643-510</p>
-                        <small class="text-muted">Seg - Sex: 8h00 - 18h00</small>
+                        <p class="fw-bold">+351 123 456 789</p>
+                        <small class="text-muted">Seg - Sex: 9h00 - 18h00</small>
                     </div>
                 </div>
             </div>
@@ -55,7 +53,7 @@
                         <h5>Email</h5>
                         <p class="text-muted mb-2">Envie-nos um email e responderemos em breve</p>
                         <p class="fw-bold">
-                            <a href="mailto:info@mc-comercial.co.ao">info@mc-comercial.co.ao</a>
+                            <a href="mailto:info@mcformacao.pt">info@mcformacao.pt</a>
                         </p>
                         <small class="text-muted">Resposta em até 24h</small>
                     </div>
@@ -70,7 +68,7 @@
                         </div>
                         <h5>Sede Principal</h5>
                         <p class="text-muted mb-2">Visite-nos na nossa sede</p>
-                        <p class="fw-bold">Rua A, Bairro 1º de Maio<br>Nº 05, 1º Andar, Luanda-Viana</p>
+                        <p class="fw-bold">Rua Principal, 123<br>1000-001 Lisboa</p>
                         <small class="text-muted">Estacionamento disponível</small>
                     </div>
                 </div>
@@ -87,14 +85,13 @@
                     </div>
                     <div class="card-body">
                         <form id="contactoForm">
-                            @csrf
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Nome Completo <span class="text-danger">*</span></label>
+                                    <label class="form-label">Nome Completo *</label>
                                     <input type="text" class="form-control" name="nome" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                    <label class="form-label">Email *</label>
                                     <input type="email" class="form-control" name="email" required>
                                 </div>
                             </div>
@@ -105,7 +102,7 @@
                                     <input type="tel" class="form-control" name="telefone">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Assunto <span class="text-danger">*</span></label>
+                                    <label class="form-label">Assunto *</label>
                                     <select class="form-select" name="assunto" required>
                                         <option value="">Selecione um assunto</option>
                                         <option value="informacoes">Informações sobre cursos</option>
@@ -125,7 +122,7 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label class="form-label">Mensagem <span class="text-danger">*</span></label>
+                                <label class="form-label">Mensagem *</label>
                                 <textarea class="form-control" name="mensagem" rows="5" required 
                                           placeholder="Descreva a sua dúvida ou pedido de informação..."></textarea>
                             </div>
@@ -153,8 +150,8 @@
                         </h6>
                     </div>
                     <div class="card-body">
-                        <p class="mb-2"><strong>Segunda a Sexta:</strong><br>8h00 - 18h00</p>
-                        <p class="mb-2"><strong>Sábado:</strong><br>9h00 - 16h00</p>
+                        <p class="mb-2"><strong>Segunda a Sexta:</strong><br>9h00 - 18h00</p>
+                        <p class="mb-2"><strong>Sábado:</strong><br>9h00 - 13h00</p>
                         <p class="mb-0"><strong>Domingo:</strong><br>Encerrado</p>
                         <hr>
                         <small class="text-muted">
@@ -162,6 +159,62 @@
                             Fora do horário de funcionamento, utilize o formulário 
                             ou envie um email.
                         </small>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-question-circle me-2"></i>Perguntas Frequentes
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="faqAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#faq1">
+                                        Como fazer uma pré-inscrição?
+                                    </button>
+                                </h2>
+                                <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Pode fazer a pré-inscrição através da página do centro, 
+                                        ou contactando-nos diretamente.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#faq2">
+                                        Que certificação recebo?
+                                    </button>
+                                </h2>
+                                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Todos os nossos cursos incluem certificado de participação 
+                                        reconhecido pelo mercado.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" 
+                                            data-bs-toggle="collapse" data-bs-target="#faq3">
+                                        Qual o preço dos cursos?
+                                    </button>
+                                </h2>
+                                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Os preços variam conforme o curso e centro. 
+                                        Contacte-nos para informações específicas.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -240,7 +293,7 @@
 </div>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 $(document).ready(function() {
     carregarCentros();
@@ -252,25 +305,16 @@ $(document).ready(function() {
 });
 
 function carregarCentros() {
-    $.get('{{ route("api.centros.index") }}')
-        .done(function(data) {
-            // Preencher select de centros
-            $('#centroSelect').html('<option value="">Selecione um centro (opcional)</option>');
-            data.forEach(centro => {
-                $('#centroSelect').append(`<option value="${centro.id}">${centro.nome} - ${centro.localizacao}</option>`);
-            });
-            
-            // Exibir centros na seção de localização
-            exibirCentrosLocalizacao(data);
-        })
-        .fail(function() {
-            $('#centros-localizacao').html(`
-                <div class="col-12 text-center py-5">
-                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-                    <p class="text-muted">Erro ao carregar informações dos centros.</p>
-                </div>
-            `);
+    $.get('/api/centros', function(data) {
+        // Preencher select de centros
+        $('#centroSelect').html('<option value="">Selecione um centro (opcional)</option>');
+        data.forEach(centro => {
+            $('#centroSelect').append(`<option value="${centro.id}">${centro.nome} - ${centro.localizacao}</option>`);
         });
+        
+        // Exibir centros na seção de localização
+        exibirCentrosLocalizacao(data);
+    });
 }
 
 function exibirCentrosLocalizacao(centros) {
@@ -309,7 +353,7 @@ function exibirCentrosLocalizacao(centros) {
                             ${centro.email ? `<small class="d-block text-muted mb-1">${centro.email}</small>` : ''}
                             ${contactosHtml}
                             <div class="mt-3">
-                                <a href="{{ route('site.centro', '') }}/${centro.id}" class="btn btn-outline-primary btn-sm">
+                                <a href="{{ route('site.centro.detalhes', '') }}/${centro.id}" class="btn btn-outline-primary btn-sm">
                                     <i class="fas fa-eye me-1"></i>Ver Detalhes
                                 </a>
                             </div>
@@ -325,9 +369,8 @@ function exibirCentrosLocalizacao(centros) {
 
 function enviarMensagem() {
     // Simulação de envio de mensagem
-    // Em produção, isto seria uma chamada AJAX para o backend
     $('#sucessoContactoModal').modal('show');
     $('#contactoForm')[0].reset();
 }
 </script>
-@endpush
+@endsection

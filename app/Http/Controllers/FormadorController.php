@@ -9,7 +9,7 @@ class FormadorController extends Controller
 {
     public function index()
     {
-        $formadores = Formador::all();
+        $formadores = Formador::with(['cursos', 'centros'])->get();
         return view('formadores.index', compact('formadores'));
     }
 
@@ -30,7 +30,7 @@ class FormadorController extends Controller
 
     public function show($id)
     {
-        $formador = Formador::findOrFail($id);
+        $formador = Formador::with(['cursos', 'centros'])->findOrFail($id);
         return view('formadores.show', compact('formador'));
     }
 

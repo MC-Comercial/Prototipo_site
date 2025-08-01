@@ -9,7 +9,7 @@ class CentroController extends Controller
 {
     public function index()
     {
-        $centros = Centro::all();
+        $centros = Centro::with(['cursos', 'formadores'])->get();
         return view('centros.index', compact('centros'));
     }
 
@@ -31,7 +31,7 @@ class CentroController extends Controller
 
     public function show($id)
     {
-        $centro = Centro::findOrFail($id);
+        $centro = Centro::with(['cursos', 'formadores'])->findOrFail($id);
         return view('centros.show', compact('centro'));
     }
 

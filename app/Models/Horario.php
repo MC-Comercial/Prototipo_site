@@ -18,10 +18,17 @@ class Horario extends Model
         'hora_fim'
     ];
 
+
     // Um horário pertence a um curso
     public function curso()
     {
         return $this->belongsTo(Curso::class);
+    }
+
+    // Um horário pertence a um centro
+    public function centro()
+    {
+        return $this->belongsTo(Centro::class);
     }
 
     // Um horário pode ter muitas pré-inscrições

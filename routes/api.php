@@ -17,7 +17,10 @@ use App\Http\Controllers\Api\AuthController;
 
 // Rotas de autenticação
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'user']);
+});
 
 // Controllers
 use App\Http\Controllers\Api\CentroController;
@@ -51,7 +54,7 @@ Route::get('/produtos/{produto}', [ProdutoController::class, 'show']);
 Route::get('/categorias/{categoria}/produtos', [ProdutoController::class, 'porCategoria']);
 
 // Apenas o público pode criar pré-inscrições
-Route::post('/pre-inscricoes', [PreInscricaoController::class, 'store']);
+Route::post('/pre-inscricoes', [PreInscricaoController::class, 'store'])->name('api.pre-inscricoes.store');
 
 // Rotas protegidas para admin (CRUD completo, exceto POST de pre-inscricoes)
 Route::middleware('auth:sanctum')->group(function () {

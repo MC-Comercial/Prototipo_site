@@ -1,7 +1,6 @@
-@extends('layouts.site')
+@extends('layouts.public')
 
 @section('title', 'Centros de Formação')
-@section('description', 'Explore todos os nossos centros de formação estrategicamente localizados')
 
 @section('content')
 <!-- Breadcrumb -->
@@ -57,7 +56,7 @@
                     <a href="{{ route('site.contactos') }}" class="btn btn-primary">
                         <i class="fas fa-phone me-2"></i>Contactar-nos
                     </a>
-                    <a href="mailto:info@mc-comercial.co.ao" class="btn btn-outline-primary">
+                    <a href="mailto:info@mcformacao.pt" class="btn btn-outline-primary">
                         <i class="fas fa-envelope me-2"></i>Enviar Email
                     </a>
                 </div>
@@ -67,29 +66,27 @@
 </section>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 $(document).ready(function() {
     carregarCentros();
 });
 
 function carregarCentros() {
-    $.get('{{ route("api.centros.index") }}')
-        .done(function(data) {
-            exibirCentros(data);
-        })
-        .fail(function() {
-            $('#centros-grid').html(`
-                <div class="col-12 text-center py-5">
-                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-                    <h5>Erro ao carregar centros</h5>
-                    <p class="text-muted">Tente novamente mais tarde ou entre em contacto connosco.</p>
-                    <button class="btn btn-primary" onclick="carregarCentros()">
-                        <i class="fas fa-redo me-2"></i>Tentar Novamente
-                    </button>
-                </div>
-            `);
-        });
+    $.get('/api/centros', function(data) {
+        exibirCentros(data);
+    }).fail(function() {
+        $('#centros-grid').html(`
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h5>Erro ao carregar centros</h5>
+                <p class="text-muted">Tente novamente mais tarde ou entre em contacto connosco.</p>
+                <button class="btn btn-primary" onclick="carregarCentros()">
+                    <i class="fas fa-redo me-2"></i>Tentar Novamente
+                </button>
+            </div>
+        `);
+    });
 }
 
 function exibirCentros(centros) {
@@ -161,7 +158,7 @@ function exibirCentros(centros) {
                             ` : ''}
                             
                             <div class="text-center mt-4">
-                                <a href="{{ route('site.centro', '') }}/${centro.id}" 
+                                <a href="/site/centro/${centro.id}" 
                                    class="btn btn-primary btn-lg w-100">
                                     <i class="fas fa-eye me-2"></i>Ver Cursos Disponíveis
                                 </a>
@@ -169,7 +166,7 @@ function exibirCentros(centros) {
                         </div>
                         <div class="card-footer bg-light text-center">
                             <small class="text-muted">
-                                <i class="fas fa-clock me-1"></i>Seg - Sex: 8h00 - 18h00
+                                <i class="fas fa-clock me-1"></i>Seg - Sex: 9h00 - 18h00
                             </small>
                         </div>
                     </div>
@@ -181,4 +178,20 @@ function exibirCentros(centros) {
     $('#centros-grid').html(html);
 }
 </script>
-@endpush
+@endsection
+
+@section('styles')
+<style>
+.card-header.bg-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) !important;
+}
+
+.badge.bg-light {
+    border: 1px solid #dee2e6;
+}
+
+.card:hover .card-header {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color)) !important;
+}
+</style>
+@endsection

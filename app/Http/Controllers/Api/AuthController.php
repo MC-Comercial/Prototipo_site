@@ -84,4 +84,31 @@ class AuthController extends Controller
             'message' => 'Logout realizado com sucesso'
         ]);
     }
+
+    /**
+     * @OA\Get(
+     *     path="/user",
+     *     tags={"Autenticação"},
+     *     summary="Obter usuário autenticado",
+     *     description="Retorna os dados do usuário atualmente autenticado",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dados do usuário",
+     *         @OA\JsonContent(ref="#/components/schemas/User")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Não autorizado"
+     *     )
+     * )
+     */
+    public function user(Request $request)
+    {
+        try {
+            return response()->json($request->user());
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Erro ao obter dados do usuário'], 500);
+        }
+    }
 }

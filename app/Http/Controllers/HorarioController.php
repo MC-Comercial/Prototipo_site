@@ -9,7 +9,7 @@ class HorarioController extends Controller
 {
     public function index()
     {
-        $horarios = Horario::all();
+        $horarios = Horario::with(['curso', 'centro'])->get();
         return view('horarios.index', compact('horarios'));
     }
 
@@ -29,7 +29,7 @@ class HorarioController extends Controller
 
     public function show($id)
     {
-        $horario = Horario::findOrFail($id);
+        $horario = Horario::with(['curso', 'centro'])->findOrFail($id);
         return view('horarios.show', compact('horario'));
     }
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Editar Curso')
+@section('title', 'Editar Categoria')
 
 @section('content')
 <div class="container-fluid">
@@ -9,11 +9,11 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1 class="display-6 mb-2">
-                        <i class="fas fa-edit me-3 text-primary"></i>Editar Curso
+                        <i class="fas fa-edit me-3 text-primary"></i>Editar Categoria
                     </h1>
-                    <p class="text-muted">Atualizar informações do curso</p>
+                    <p class="text-muted">Atualizar informações da categoria</p>
                 </div>
-                <a href="{{ route('cursos.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('categorias.index') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Voltar
                 </a>
             </div>
@@ -25,43 +25,37 @@
             <div class="card">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0">
-                        <i class="fas fa-book me-2"></i>Informações do Curso
+                        <i class="fas fa-tags me-2"></i>Informações da Categoria
                     </h5>
                 </div>
                 <div class="card-body">
                     <div id="loadingContent" class="text-center py-5">
                         <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
-                        <p>Carregando dados do curso...</p>
+                        <p>Carregando dados da categoria...</p>
                     </div>
 
-                    <form id="cursoForm" style="display: none;">
-                        <input type="hidden" id="curso_id" name="id">
+                    <form id="categoriaForm" style="display: none;">
+                        <input type="hidden" id="categoria_id" name="id">
                         
                         <div class="row">
                             <div class="col-md-8 mb-3">
-                                <label for="nome" class="form-label">Nome do Curso <span class="text-danger">*</span></label>
+                                <label for="nome" class="form-label">Nome da Categoria <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="nome" name="nome" required maxlength="100">
                                 <div class="form-text">Máximo 100 caracteres</div>
                             </div>
                             
                             <div class="col-md-4 mb-3">
-                                <label for="area" class="form-label">Área <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="area" name="area" required maxlength="100">
-                                <div class="form-text">Ex: Informática, Gestão, etc.</div>
+                                <label for="tipo" class="form-label">Tipo <span class="text-danger">*</span></label>
+                                <select class="form-select" id="tipo" name="tipo" required>
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="loja">Loja</option>
+                                    <option value="snack">Snack</option>
+                                </select>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="modalidade" class="form-label">Modalidade <span class="text-danger">*</span></label>
-                                <select class="form-select" id="modalidade" name="modalidade" required>
-                                    <option value="">Selecione a modalidade</option>
-                                    <option value="presencial">Presencial</option>
-                                    <option value="online">Online</option>
-                                </select>
-                            </div>
-                            
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label for="ativo" class="form-label">Status</label>
                                 <select class="form-select" id="ativo" name="ativo">
                                     <option value="1">Ativo</option>
@@ -71,29 +65,17 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="imagem_url" class="form-label">URL da Imagem</label>
-                            <input type="url" class="form-control" id="imagem_url" name="imagem_url" maxlength="255">
-                            <div class="form-text">URL opcional para a imagem do curso</div>
-                        </div>
-
-                        <div class="mb-3">
                             <label for="descricao" class="form-label">Descrição</label>
                             <textarea class="form-control" id="descricao" name="descricao" rows="4" maxlength="1000"></textarea>
-                            <div class="form-text">Descrição detalhada do curso (máximo 1000 caracteres)</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="programa" class="form-label">Programa do Curso</label>
-                            <textarea class="form-control" id="programa" name="programa" rows="8" maxlength="5000"></textarea>
-                            <div class="form-text">Programa detalhado, módulos, objetivos, etc. (máximo 5000 caracteres)</div>
+                            <div class="form-text">Descrição detalhada da categoria (máximo 1000 caracteres)</div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('cursos.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('categorias.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-times me-2"></i>Cancelar
                             </a>
                             <button type="submit" class="btn btn-warning">
-                                <i class="fas fa-save me-2"></i>Atualizar Curso
+                                <i class="fas fa-save me-2"></i>Atualizar Categoria
                             </button>
                         </div>
                     </form>
@@ -134,64 +116,61 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-    const cursoId = {{ request()->route('id') ?? 'null' }};
+    const categoriaId = {{ request()->route('id') ?? 'null' }};
     
-    if (cursoId) {
-        carregarCurso(cursoId);
+    if (categoriaId) {
+        carregarCategoria(categoriaId);
     } else {
-        Swal.fire('Erro!', 'ID do curso não fornecido.', 'error').then(() => {
-            window.location.href = '{{ route("cursos.index") }}';
+        Swal.fire('Erro!', 'ID da categoria não fornecido.', 'error').then(() => {
+            window.location.href = '{{ route("categorias.index") }}';
         });
     }
 
     // Preview em tempo real
-    $('#cursoForm input, #cursoForm select, #cursoForm textarea').on('input change', function() {
+    $('#categoriaForm input, #categoriaForm select, #categoriaForm textarea').on('input change', function() {
         atualizarPreview();
     });
 
     // Submit do formulário
-    $('#cursoForm').on('submit', function(e) {
+    $('#categoriaForm').on('submit', function(e) {
         e.preventDefault();
-        atualizarCurso();
+        atualizarCategoria();
     });
 });
 
-function carregarCurso(id) {
-    $.get(`/api/cursos/${id}`)
-        .done(function(curso) {
+function carregarCategoria(id) {
+    $.get(`/api/categorias/${id}`)
+        .done(function(categoria) {
             // Preencher formulário
-            $('#curso_id').val(curso.id);
-            $('#nome').val(curso.nome);
-            $('#area').val(curso.area);
-            $('#modalidade').val(curso.modalidade);
-            $('#ativo').val(curso.ativo ? 1 : 0);
-            $('#imagem_url').val(curso.imagem_url || '');
-            $('#descricao').val(curso.descricao || '');
-            $('#programa').val(curso.programa || '');
+            $('#categoria_id').val(categoria.id);
+            $('#nome').val(categoria.nome);
+            $('#tipo').val(categoria.tipo);
+            $('#ativo').val(categoria.ativo ? 1 : 0);
+            $('#descricao').val(categoria.descricao || '');
 
             // Mostrar informações
-            mostrarInformacoesCurso(curso);
+            mostrarInformacoesCategoria(categoria);
 
             // Mostrar formulário
             $('#loadingContent').hide();
-            $('#cursoForm').show();
+            $('#categoriaForm').show();
 
             // Atualizar preview inicial
             atualizarPreview();
         })
         .fail(function() {
-            Swal.fire('Erro!', 'Curso não encontrado.', 'error').then(() => {
-                window.location.href = '{{ route("cursos.index") }}';
+            Swal.fire('Erro!', 'Categoria não encontrada.', 'error').then(() => {
+                window.location.href = '{{ route("categorias.index") }}';
             });
         });
 }
 
-function mostrarInformacoesCurso(curso) {
-    const dataFormatada = new Date(curso.created_at).toLocaleDateString('pt-PT');
-    const dataAtualizacao = new Date(curso.updated_at).toLocaleDateString('pt-PT');
+function mostrarInformacoesCategoria(categoria) {
+    const dataFormatada = new Date(categoria.created_at).toLocaleDateString('pt-PT');
+    const dataAtualizacao = new Date(categoria.updated_at).toLocaleDateString('pt-PT');
 
     const infoHtml = `
-        <p><strong>ID:</strong> ${curso.id}</p>
+        <p><strong>ID:</strong> ${categoria.id}</p>
         <p><strong>Data de Criação:</strong><br><small>${dataFormatada}</small></p>
         <p><strong>Última Atualização:</strong><br><small>${dataAtualizacao}</small></p>
         
@@ -201,7 +180,7 @@ function mostrarInformacoesCurso(curso) {
         <ul class="small">
             <li>As alterações serão salvas imediatamente</li>
             <li>Certifique-se de que todos os dados estão corretos</li>
-            <li>Cursos inativos não aparecerão nas listagens públicas</li>
+            <li>Categorias inativas não aparecerão nas listagens públicas</li>
         </ul>
     `;
 
@@ -210,33 +189,25 @@ function mostrarInformacoesCurso(curso) {
 
 function atualizarPreview() {
     const nome = $('#nome').val();
-    const area = $('#area').val();
-    const modalidade = $('#modalidade').val();
+    const tipo = $('#tipo').val();
     const ativo = $('#ativo').val();
-    const imagem_url = $('#imagem_url').val();
     const descricao = $('#descricao').val();
 
-    if (nome || area || modalidade) {
+    if (nome || tipo) {
         const statusBadge = ativo == '1' 
             ? '<span class="badge bg-success">Ativo</span>' 
             : '<span class="badge bg-secondary">Inativo</span>';
         
-        const modalidadeBadge = modalidade === 'online' 
-            ? '<span class="badge bg-info">Online</span>' 
-            : modalidade === 'presencial' 
-                ? '<span class="badge bg-warning text-dark">Presencial</span>' 
+        const tipoBadge = tipo === 'loja' 
+            ? '<span class="badge bg-info">Loja</span>' 
+            : tipo === 'snack' 
+                ? '<span class="badge bg-warning text-dark">Snack</span>' 
                 : '';
-        
-        const imagem = imagem_url 
-            ? `<img src="${imagem_url}" alt="Preview" class="img-fluid rounded mb-2" style="max-height: 100px;" onerror="this.style.display='none'">` 
-            : '';
 
         let preview = `
-            <div class="text-center mb-2">${imagem}</div>
-            <h6>${nome || 'Nome do Curso'}</h6>
-            <p class="mb-1"><strong>Área:</strong> ${area || 'Não definida'}</p>
+            <h6>${nome || 'Nome da Categoria'}</h6>
             <p class="mb-2">
-                ${modalidadeBadge} ${statusBadge}
+                ${tipoBadge} ${statusBadge}
             </p>
             ${descricao ? `<p class="small text-muted">${descricao.substring(0, 100)}...</p>` : ''}
         `;
@@ -248,38 +219,35 @@ function atualizarPreview() {
     }
 }
 
-function atualizarCurso() {
-    const cursoId = $('#curso_id').val();
+function atualizarCategoria() {
+    const categoriaId = $('#categoria_id').val();
     const formData = {
         nome: $('#nome').val(),
-        area: $('#area').val(),
-        modalidade: $('#modalidade').val(),
+        tipo: $('#tipo').val(),
         ativo: parseInt($('#ativo').val()),
-        imagem_url: $('#imagem_url').val() || null,
-        descricao: $('#descricao').val() || null,
-        programa: $('#programa').val() || null
+        descricao: $('#descricao').val() || null
     };
 
     $.ajax({
-        url: `/api/cursos/${cursoId}`,
+        url: `/api/categorias/${categoriaId}`,
         method: 'PUT',
         data: JSON.stringify(formData),
         contentType: 'application/json',
         beforeSend: function() {
-            $('#cursoForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Atualizando...');
+            $('#categoriaForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Atualizando...');
         },
         success: function(response) {
             Swal.fire({
                 title: 'Sucesso!',
-                text: 'Curso atualizado com sucesso!',
+                text: 'Categoria atualizada com sucesso!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = '{{ route("cursos.index") }}';
+                window.location.href = '{{ route("categorias.index") }}';
             });
         },
         error: function(xhr) {
-            let message = 'Ocorreu um erro ao atualizar o curso.';
+            let message = 'Ocorreu um erro ao atualizar a categoria.';
             
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 message = xhr.responseJSON.message;
@@ -296,7 +264,7 @@ function atualizarCurso() {
             });
         },
         complete: function() {
-            $('#cursoForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Atualizar Curso');
+            $('#categoriaForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Atualizar Categoria');
         }
     });
 }

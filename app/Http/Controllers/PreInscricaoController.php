@@ -9,7 +9,7 @@ class PreInscricaoController extends Controller
 {
     public function index()
     {
-        $preInscricoes = PreInscricao::all();
+        $preInscricoes = PreInscricao::with(['curso', 'centro'])->get();
         return view('pre-inscricoes.index', compact('preInscricoes'));
     }
 
@@ -30,7 +30,7 @@ class PreInscricaoController extends Controller
 
     public function show($id)
     {
-        $preInscricao = PreInscricao::findOrFail($id);
+        $preInscricao = PreInscricao::with(['curso', 'centro'])->findOrFail($id);
         return view('pre-inscricoes.show', compact('preInscricao'));
     }
 
