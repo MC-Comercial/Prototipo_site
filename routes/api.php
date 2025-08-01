@@ -30,16 +30,16 @@ use App\Http\Controllers\Api\PreInscricaoController;
 
 
 // Rotas públicas de leitura
-Route::get('/centros', [CentroController::class, 'index']);
+Route::get('/centros', [CentroController::class, 'index'])->name('api.centros.index');
 Route::get('/centros/{id}', [CentroController::class, 'show']);
 
-Route::get('/cursos', [CursoController::class, 'index']);
+Route::get('/cursos', [CursoController::class, 'index'])->name('api.cursos.index');
 Route::get('/cursos/{id}', [CursoController::class, 'show']);
 
 Route::get('/horarios', [HorarioController::class, 'index']);
 Route::get('/horarios/{id}', [HorarioController::class, 'show']);
 
-Route::get('/formadores', [FormadorController::class, 'index']);
+Route::get('/formadores', [FormadorController::class, 'index'])->name('api.formadores.index');
 Route::get('/formadores/{id}', [FormadorController::class, 'show']);
 
 Route::get('/categorias', [CategoriaController::class, 'index']);
