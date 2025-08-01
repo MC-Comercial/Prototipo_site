@@ -86,7 +86,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/produtos/{produto}', [ProdutoController::class, 'destroy']);
 
     // Pre-inscrições (admin pode ver, editar, deletar)
-    Route::get('/pre-inscricoes', [PreInscricaoController::class, 'index']);
+
+    Route::get('/pre-inscricoes', [PreInscricaoController::class, 'index'])->name('api.pre-inscricoes.index');
+
     Route::get('/pre-inscricoes/{id}', [PreInscricaoController::class, 'show']);
     Route::put('/pre-inscricoes/{id}', [PreInscricaoController::class, 'update']);
     Route::delete('/pre-inscricoes/{id}', [PreInscricaoController::class, 'destroy']);
