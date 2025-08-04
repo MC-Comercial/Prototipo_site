@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MC Formação - Login</title>
+    <title>MC Comercial - Login</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- Bootstrap CSS -->
@@ -119,7 +119,7 @@
         <div class="login-card">
             <div class="login-header">
                 <i class="fas fa-graduation-cap logo-icon"></i>
-                <h1>MC Formação</h1>
+                <h1>MC Comercial</h1>
                 <p>Sistema de Gestão</p>
             </div>
             
@@ -194,7 +194,7 @@
                 
                 <div class="text-center mt-3">
                     <small class="text-muted">
-                        © 2024 MC Formação. Todos os direitos reservados.
+                        © 2025 MC Comercial. Todos os direitos reservados.
                     </small>
                 </div>
             </div>

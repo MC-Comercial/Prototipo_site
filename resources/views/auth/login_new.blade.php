@@ -143,29 +143,23 @@
                 // Esconder mensagem de erro anterior
                 $('#loginError').addClass('d-none');
                 
-                const credentials = {
+                const formData = {
                     email: $('#email').val(),
                     password: $('#password').val(),
-                    remember: $('#remember').is(':checked')
+                    remember: $('#remember').is(':checked'),
+                    _token: $('meta[name="csrf-token"]').attr('content')
                 };
 
+                console.log('Attempting login with:', formData);
+
                 $.ajax({
-                    url: '/api/login',
+                    url: '/login',
                     method: 'POST',
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    data: JSON.stringify(credentials),
+                    data: formData,
                     success: function(response) {
                         console.log('Login successful:', response);
-                        if (response && response.token) {
-                            localStorage.setItem('auth_token', response.token);
-                            window.location.href = '/dashboard';
-                        } else {
-                            console.error('Invalid response:', response);
-                            $('#loginError').removeClass('d-none')
-                                .text('Resposta inválida do servidor');
-                            $submitBtn.prop('disabled', false).html(originalText);
-                        }
+                        // Redirecionar para dashboard
+                        window.location.href = '/dashboard';
                     },
                     error: function(xhr, status, error) {
                         console.error('Login error:', {xhr, status, error});

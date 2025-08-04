@@ -134,6 +134,15 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Configurar headers AJAX globalmente
+    $.ajaxSetup({
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     // Preview em tempo real
     $('#centroForm input, #centroForm select').on('input change', function() {
         atualizarPreview();
@@ -266,6 +275,14 @@ function criarCentro() {
             });
         },
         error: function(xhr) {
+            console.error('Erro ao criar centro:', xhr);
+            
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
+            
             let message = 'Ocorreu um erro ao criar o centro.';
             
             if (xhr.responseJSON && xhr.responseJSON.message) {

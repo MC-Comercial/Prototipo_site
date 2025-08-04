@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MC Formação - Pré-Inscrição</title>
+    <title>MC Comercial - Pré-Inscrição</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- Bootstrap CSS -->
@@ -141,7 +141,7 @@
         <div class="hero-section">
             <div class="hero-header">
                 <i class="fas fa-graduation-cap fa-3x mb-3"></i>
-                <h1 class="display-5 fw-bold">MC Formação</h1>
+                <h1 class="display-5 fw-bold">MC Comercial</h1>
                 <p class="lead mb-0">Inscreva-se nos nossos cursos de formação</p>
             </div>
             

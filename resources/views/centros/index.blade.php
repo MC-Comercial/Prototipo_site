@@ -77,8 +77,14 @@ $(document).ready(function() {
     carregarCentros();
 });
 
+/**
+ * Carrega a lista de centros da API
+ */
 function carregarCentros() {
-    $.get('/api/centros', function(data) {
+    $.ajax({
+        url: '/api/centros',
+        method: 'GET',
+        success: function(data) {
         let html = '';
         
         if (data.length === 0) {
@@ -147,11 +153,19 @@ function carregarCentros() {
                  '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             order: [[0, 'desc']]
         });
-    });
+    } catch (error) {
+        console.error('Erro ao carregar centros:', error);
+        $('#centrosTable tbody').html('<tr><td colspan="7" class="text-center text-danger">Erro ao carregar os dados</td></tr>');
+    }
 }
 
-function visualizarCentro(id) {
-    $.get(`/api/centros/${id}`, function(centro) {
+/**
+ * Visualiza os detalhes de um centro específico
+ * @param {number} id - ID do centro
+ */
+async function visualizarCentro(id) {
+    try {
+        const centro = await window.centrosManager.findById(id);
         let contactosHtml = '';
         try {
             const contactosObj = typeof centro.contactos === 'string' ? JSON.parse(centro.contactos) : centro.contactos;
@@ -185,11 +199,18 @@ function visualizarCentro(id) {
         
         $('#viewModalContent').html(html);
         $('#viewModal').modal('show');
-    });
+    } catch (error) {
+        console.error('Erro ao carregar detalhes do centro:', error);
+        window.authManager.showAlert('Erro ao carregar os detalhes do centro.', 'danger');
+    }
 }
 
-function eliminarCentro(id) {
-    Swal.fire({
+/**
+ * Elimina um centro específico
+ * @param {number} id - ID do centro a eliminar
+ */
+async function eliminarCentro(id) {
+    const result = await Swal.fire({
         title: 'Tem certeza?',
         text: 'Esta ação irá eliminar o centro permanentemente!',
         icon: 'warning',
@@ -198,29 +219,17 @@ function eliminarCentro(id) {
         cancelButtonColor: '#64748b',
         confirmButtonText: 'Sim, eliminar!',
         cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: `/api/centros/${id}`,
-                method: 'DELETE',
-                success: function(response) {
-                    Swal.fire(
-                        'Eliminado!',
-                        'O centro foi eliminado com sucesso.',
-                        'success'
-                    );
-                    carregarCentros();
-                },
-                error: function(xhr) {
-                    Swal.fire(
-                        'Erro!',
-                        'Ocorreu um erro ao eliminar o centro.',
-                        'error'
-                    );
-                }
-            });
-        }
     });
+
+    if (result.isConfirmed) {
+        try {
+            await window.centrosManager.delete(id);
+            carregarCentros();
+        } catch (error) {
+            console.error('Erro ao eliminar centro:', error);
+            // O erro já é tratado pelo CrudManager
+        }
+    }
 }
 </script>
 @endsection

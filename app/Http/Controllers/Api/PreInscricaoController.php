@@ -38,22 +38,27 @@ class PreInscricaoController extends Controller
             'centro_id' => 'required|exists:centros,id',
             'horario_id' => 'nullable|exists:horarios,id',
             'nome_completo' => 'required|string|max:100',
-            'contactos' => [
-                'required',
-                'array',
-                'min:1'
-            ],
-            'contactos.*' => [
-                'required',
-                'string',
-                'regex:/^9\d{8}$/'
-            ],
+            'contactos' => 'required|string',
             'email' => 'nullable|email|max:100',
             'observacoes' => 'nullable|string|max:500'
         ]);
 
-        // Formatar dados
-        $validated['contactos'] = array_map('strval', $validated['contactos']);
+        // Processar contactos - vem como JSON string do frontend
+        try {
+            $contactosArray = json_decode($validated['contactos'], true);
+            if (!is_array($contactosArray) || empty($contactosArray)) {
+                return response()->json([
+                    'status' => 'erro',
+                    'mensagem' => 'Contactos devem ser fornecidos como um array JSON válido'
+                ], 422);
+            }
+            $validated['contactos'] = json_encode($contactosArray);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'erro',
+                'mensagem' => 'Formato de contactos inválido'
+            ], 422);
+        }
         $validated['status'] = 'pendente'; // Status padrão
         
         // Normalizar email para lowercase se fornecido

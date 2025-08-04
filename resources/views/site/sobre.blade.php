@@ -20,7 +20,7 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h1 class="section-title text-start">Sobre a MC Formação</h1>
+                <h1 class="section-title text-start">Sobre a MC Comercial</h1>
                 <p class="lead text-muted">
                     Há mais de 10 anos a formar profissionais qualificados e preparados 
                     para os desafios do mercado de trabalho moderno.
@@ -28,7 +28,7 @@
             </div>
             <div class="col-lg-6 text-center">
                 <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                     alt="Equipa MC Formação" 
+                     alt="Equipa MC Comercial" 
                      class="img-fluid rounded-3 shadow-lg">
             </div>
         </div>
@@ -48,7 +48,7 @@
                             <div class="year-badge">2014</div>
                         </div>
                         <div class="col-md-9">
-                            <h5>Fundação da MC Formação</h5>
+                            <h5>Fundação da MC Comercial</h5>
                             <p class="text-muted">
                                 Inicio das atividades com foco em formação profissional 
                                 nas áreas de tecnologia e gestão.
@@ -256,7 +256,7 @@
             <div class="col-lg-8">
                 <h2 class="display-6 fw-bold mb-4">Junte-se a Nós</h2>
                 <p class="lead mb-4">
-                    Faça parte da família MC Formação e transforme o seu futuro profissional.
+                    Faça parte da família MC Comercial e transforme o seu futuro profissional.
                 </p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap">
                     <a href="{{ route('site.centros') }}" class="btn btn-light btn-lg">

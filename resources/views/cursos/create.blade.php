@@ -131,6 +131,15 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Configurar headers AJAX globalmente
+    $.ajaxSetup({
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     // Preview em tempo real
     $('#cursoForm input, #cursoForm select, #cursoForm textarea').on('input change', function() {
         atualizarPreview();
@@ -213,6 +222,13 @@ function criarCurso() {
             });
         },
         error: function(xhr) {
+            console.error('Erro ao criar curso:', xhr);
+            
+            if (xhr.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            
             let message = 'Ocorreu um erro ao criar o curso.';
             
             if (xhr.responseJSON && xhr.responseJSON.message) {

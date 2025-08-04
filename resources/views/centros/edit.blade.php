@@ -114,6 +114,15 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Configurar headers AJAX globalmente
+    $.ajaxSetup({
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     const centroId = {{ request()->route('id') ?? 'null' }};
     
     if (centroId) {
@@ -175,7 +184,13 @@ function carregarCentro(id) {
             // Atualizar preview inicial
             atualizarPreview();
         })
-        .fail(function() {
+        .fail(function(xhr) {
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
+            
             Swal.fire('Erro!', 'Centro não encontrado.', 'error').then(() => {
                 window.location.href = '{{ route("centros.index") }}';
             });
@@ -335,6 +350,14 @@ function atualizarCentro() {
             });
         },
         error: function(xhr) {
+            console.error('Erro ao atualizar centro:', xhr);
+            
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
+            
             let message = 'Ocorreu um erro ao atualizar o centro.';
             
             if (xhr.responseJSON && xhr.responseJSON.message) {

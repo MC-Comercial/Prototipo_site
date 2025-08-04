@@ -133,6 +133,15 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Configurar headers AJAX globalmente
+    $.ajaxSetup({
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     let contactoIndex = 0;
     const formadorId = {{ request()->route('id') }};
 
@@ -187,7 +196,12 @@ function carregarFormador(id) {
             
             atualizarPreview();
         })
-        .fail(function() {
+        .fail(function(xhr) {
+            if (xhr.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            
             Swal.fire({
                 title: 'Erro!',
                 text: 'Não foi possível carregar os dados do formador.',
@@ -352,6 +366,13 @@ function atualizarFormador() {
             });
         },
         error: function(xhr) {
+            console.error('Erro ao atualizar formador:', xhr);
+            
+            if (xhr.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            
             let message = 'Ocorreu um erro ao atualizar o formador.';
             
             if (xhr.responseJSON && xhr.responseJSON.message) {

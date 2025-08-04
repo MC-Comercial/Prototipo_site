@@ -149,6 +149,15 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Configurar headers AJAX globalmente
+    $.ajaxSetup({
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     let contactoIndex = 1;
 
     // Preview em tempo real
@@ -319,6 +328,13 @@ function criarFormador() {
             });
         },
         error: function(xhr) {
+            console.error('Erro ao criar formador:', xhr);
+            
+            if (xhr.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            
             let message = 'Ocorreu um erro ao criar o formador.';
             
             if (xhr.responseJSON && xhr.responseJSON.message) {

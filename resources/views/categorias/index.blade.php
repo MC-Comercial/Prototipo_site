@@ -76,8 +76,15 @@ $(document).ready(function() {
     carregarCategorias();
 });
 
+/**
+ * Carrega todas as categorias da API e atualiza a tabela
+ * @returns {void}
+ */
 function carregarCategorias() {
-    $.get('/api/categorias', function(data) {
+    $.ajax({
+        url: '/api/categorias',
+        type: 'GET',
+        success: function(data) {
         let html = '';
         
         if (data.length === 0) {
@@ -139,44 +146,85 @@ function carregarCategorias() {
                  '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             order: [[0, 'desc']]
         });
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                // Token expirado, remover e redirecionar para login
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            } else {
+                Swal.fire(
+                    'Erro!',
+                    'Ocorreu um erro ao carregar as categorias.',
+                    'error'
+                );
+            }
+        }
     });
 }
 
+/**
+ * Abre modal com detalhes da categoria
+ * @param {number} id - ID da categoria
+ * @returns {void}
+ */
 function visualizarCategoria(id) {
-    $.get(`/api/categorias/${id}`, function(response) {
-        // Se a resposta vem com status e dados, extrair dados
-        const categoria = response.dados || response;
-        const statusBadge = categoria.ativo 
-            ? '<span class="badge bg-success">Ativo</span>' 
-            : '<span class="badge bg-secondary">Inativo</span>';
-        
-        const tipoBadge = categoria.tipo === 'loja' 
-            ? '<span class="badge bg-info">Loja</span>' 
-            : '<span class="badge bg-warning text-dark">Snack</span>';
-        
-        let html = `
-            <div class="row">
-                <div class="col-12">
-                    <h4>${categoria.nome}</h4>
-                    <p class="mb-2"><strong>Tipo:</strong> ${tipoBadge}</p>
-                    <p class="mb-2"><strong>Status:</strong> ${statusBadge}</p>
-                    <p class="mb-2"><strong>Data de Criação:</strong> ${new Date(categoria.created_at).toLocaleDateString('pt-PT')}</p>
-                </div>
-            </div>
+    $.ajax({
+        url: `/api/categorias/${id}`,
+        type: 'GET',
+        success: function(response) {
+            // Se a resposta vem com status e dados, extrair dados
+            const categoria = response.dados || response;
+            const statusBadge = categoria.ativo 
+                ? '<span class="badge bg-success">Ativo</span>' 
+                : '<span class="badge bg-secondary">Inativo</span>';
             
-            ${categoria.descricao ? `
-                <div class="mt-3">
-                    <h6><strong>Descrição:</strong></h6>
-                    <p class="text-muted">${categoria.descricao}</p>
+            const tipoBadge = categoria.tipo === 'loja' 
+                ? '<span class="badge bg-info">Loja</span>' 
+                : '<span class="badge bg-warning text-dark">Snack</span>';
+            
+            let html = `
+                <div class="row">
+                    <div class="col-12">
+                        <h4>${categoria.nome}</h4>
+                        <p class="mb-2"><strong>Tipo:</strong> ${tipoBadge}</p>
+                        <p class="mb-2"><strong>Status:</strong> ${statusBadge}</p>
+                        <p class="mb-2"><strong>Data de Criação:</strong> ${new Date(categoria.created_at).toLocaleDateString('pt-PT')}</p>
+                    </div>
                 </div>
-            ` : ''}
-        `;
-        
-        $('#viewModalContent').html(html);
-        $('#viewModal').modal('show');
+                
+                ${categoria.descricao ? `
+                    <div class="mt-3">
+                        <h6><strong>Descrição:</strong></h6>
+                        <p class="text-muted">${categoria.descricao}</p>
+                    </div>
+                ` : ''}
+            `;
+            
+            $('#viewModalContent').html(html);
+            $('#viewModal').modal('show');
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                // Token expirado, remover e redirecionar para login
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            } else {
+                Swal.fire(
+                    'Erro!',
+                    'Ocorreu um erro ao carregar os detalhes da categoria.',
+                    'error'
+                );
+            }
+        }
     });
 }
 
+/**
+ * Exibe confirmação e elimina categoria se confirmado
+ * @param {number} id - ID da categoria a eliminar
+ * @returns {void}
+ */
 function eliminarCategoria(id) {
     Swal.fire({
         title: 'Tem certeza?',
@@ -201,11 +249,17 @@ function eliminarCategoria(id) {
                     carregarCategorias();
                 },
                 error: function(xhr) {
-                    Swal.fire(
-                        'Erro!',
-                        'Ocorreu um erro ao eliminar a categoria.',
-                        'error'
-                    );
+                    if (xhr.status === 401) {
+                        // Token expirado, remover e redirecionar para login
+                        localStorage.removeItem('token');
+                        window.location.href = '/login';
+                    } else {
+                        Swal.fire(
+                            'Erro!',
+                            'Ocorreu um erro ao eliminar a categoria.',
+                            'error'
+                        );
+                    }
                 }
             });
         }

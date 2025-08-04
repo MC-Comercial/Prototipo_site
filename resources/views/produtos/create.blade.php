@@ -132,6 +132,15 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Configurar headers AJAX globalmente
+    $.ajaxSetup({
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     carregarCategorias();
 
     // Preview em tempo real
@@ -158,7 +167,12 @@ function carregarCategorias() {
         });
         
         $('#categoria_id').html(options);
-    }).fail(function() {
+    }).fail(function(xhr) {
+        console.error('Erro ao carregar categorias:', xhr);
+        if (xhr.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
         $('#categoria_id').html('<option value="">Erro ao carregar categorias</option>');
     });
 }
@@ -236,6 +250,12 @@ function criarProduto() {
             });
         },
         error: function(xhr) {
+            console.error('Erro ao criar produto:', xhr);
+            if (xhr.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            
             let message = 'Ocorreu um erro ao criar o produto.';
             
             if (xhr.responseJSON && xhr.responseJSON.message) {

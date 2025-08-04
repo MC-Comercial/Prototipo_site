@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MC Formação - @yield('title')</title>
+    <title>MC Comercial - @yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -153,7 +154,7 @@
                 <i class="fas fa-bars"></i>
             </button>
             <a class="navbar-brand ms-3" href="{{ route('dashboard') }}">
-                <i class="fas fa-graduation-cap me-2"></i>MC Formação
+                <i class="fas fa-graduation-cap me-2"></i>MC Comercial
             </a>
             
             <div class="navbar-nav ms-auto">
@@ -165,10 +166,7 @@
                         <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
-                            <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
+                            <a class="dropdown-item" href="#" onclick="event.preventDefault(); logout();">
                                 <i class="fas fa-sign-out-alt me-2"></i>Sair
                             </a>
                         </li>
@@ -238,6 +236,8 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/datatables-pt.js') }}"></script>
+    <!-- Auth manager temporariamente desabilitado -->
+    <!-- <script src="{{ asset('js/auth-manager.js') }}"></script> -->
     
     <script>
         function toggleSidebar() {
@@ -250,6 +250,27 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
+        /**
+         * Função para fazer logout
+         */
+        function logout() {
+            // Criar form para logout
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/logout';
+            
+            // Adicionar token CSRF
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = $('meta[name="csrf-token"]').attr('content');
+            form.appendChild(csrfInput);
+            
+            // Adicionar ao body e submeter
+            document.body.appendChild(form);
+            form.submit();
+        }
 
         // Confirm delete
         function confirmDelete(url, message = 'Esta ação não pode ser desfeita!') {

@@ -24,6 +24,7 @@ Route::get('/home', [SiteController::class, 'home'])->name('site.home.alt');
 Route::get('/site', [SiteController::class, 'home'])->name('site.home.alt2');
 Route::get('/site/centros', [SiteController::class, 'centros'])->name('site.centros');
 Route::get('/site/centro/{centro}', [SiteController::class, 'centro'])->name('site.centro');
+Route::get('/site/cursos', [SiteController::class, 'cursos'])->name('site.cursos');
 Route::get('/site/sobre', [SiteController::class, 'sobre'])->name('site.sobre');
 Route::get('/site/contactos', [SiteController::class, 'contactos'])->name('site.contactos');
 
@@ -33,10 +34,17 @@ Route::get('/site/contactos', [SiteController::class, 'contactos'])->name('site.
 |--------------------------------------------------------------------------
 */
 
-// Rota apenas para exibir a página de login
+// Rota para exibir a página de login
 Route::get('/login', function () {
     return view('auth.login_new');
 })->name('login');
+
+// Rotas de autenticação
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+// Rota híbrida para login via API que cria sessão web
+Route::post('/api/web-login', [AuthenticatedSessionController::class, 'apiLogin'])->name('api.web.login');
 
 Route::get('/debug-routes', function() {
     $routes = collect(\Route::getRoutes())->map(function ($route) {

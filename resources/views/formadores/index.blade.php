@@ -78,8 +78,15 @@ $(document).ready(function() {
     carregarFormadores();
 });
 
+/**
+ * Carrega a lista de formadores via API
+ * Faz requisição autenticada para obter todos os formadores
+ */
 function carregarFormadores() {
-    $.get('/api/formadores', function(data) {
+    $.ajax({
+        url: '/api/formadores',
+        method: 'GET',
+        success: function(data) {
         let html = '';
         
         if (data.length === 0) {
@@ -154,11 +161,30 @@ function carregarFormadores() {
                  '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             order: [[0, 'desc']]
         });
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
+            
+            $('#formadoresTable tbody').html(
+                '<tr><td colspan="8" class="text-center text-danger">Erro ao carregar formadores</td></tr>'
+            );
+        }
     });
 }
 
+/**
+ * Visualiza detalhes de um formador específico
+ * @param {number} id - ID do formador a visualizar
+ */
 function visualizarFormador(id) {
-    $.get(`/api/formadores/${id}`, function(formador) {
+    $.ajax({
+        url: `/api/formadores/${id}`,
+        method: 'GET',
+        success: function(formador) {
         const foto = formador.foto_url 
             ? `<img src="${formador.foto_url}" alt="Foto do formador" class="img-fluid rounded-circle" style="max-width: 150px; max-height: 150px; object-fit: cover;">` 
             : '<div class="text-center"><i class="fas fa-user-circle fa-5x text-muted"></i><br><span class="text-muted">Sem foto</span></div>';
@@ -213,9 +239,27 @@ function visualizarFormador(id) {
         
         $('#viewModalContent').html(html);
         $('#viewModal').modal('show');
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
+            
+            Swal.fire(
+                'Erro!',
+                'Erro ao carregar detalhes do formador.',
+                'error'
+            );
+        }
     });
 }
 
+/**
+ * Elimina um formador específico
+ * @param {number} id - ID do formador a eliminar
+ */
 function eliminarFormador(id) {
     Swal.fire({
         title: 'Tem certeza?',
@@ -240,6 +284,12 @@ function eliminarFormador(id) {
                     carregarFormadores();
                 },
                 error: function(xhr) {
+                    if (xhr.status === 401) {
+                        localStorage.removeItem('auth_token');
+                        window.location.href = '/login';
+                        return;
+                    }
+                    
                     Swal.fire(
                         'Erro!',
                         'Ocorreu um erro ao eliminar o formador.',

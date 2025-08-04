@@ -78,8 +78,14 @@ $(document).ready(function() {
     carregarCursos();
 });
 
+/**
+ * Carrega a lista de cursos da API
+ */
 function carregarCursos() {
-    $.get('/api/cursos', function(data) {
+    $.ajax({
+        url: '/api/cursos',
+        method: 'GET',
+        success: function(data) {
         let html = '';
         
         if (data.length === 0) {
@@ -144,14 +150,26 @@ function carregarCursos() {
             order: [[0, 'desc']],
             lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
             dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-                 '<"row"<"col-sm-12"tr>>' +
-                 '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+            '<"row"<"col-sm-12"tr>>' +
+            '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
         });
+        },
+        error: function(xhr) {
+            console.error('Erro ao carregar cursos:', xhr);
+            $('#cursosTable tbody').html('<tr><td colspan="8" class="text-center text-danger">Erro ao carregar os dados</td></tr>');
+        }
     });
 }
 
+/**
+ * Visualiza os detalhes de um curso específico
+ * @param {number} id - ID do curso
+ */
 function visualizarCurso(id) {
-    $.get(`/api/cursos/${id}`, function(response) {
+    $.ajax({
+        url: `/api/cursos/${id}`,
+        method: 'GET',
+        success: function(response) {
         // Se a resposta vem com status e dados, extrair dados
         const curso = response.dados || response;
         const statusBadge = curso.ativo 
@@ -199,9 +217,18 @@ function visualizarCurso(id) {
         
         $('#viewModalContent').html(html);
         $('#viewModal').modal('show');
+        },
+        error: function(xhr) {
+            console.error('Erro ao carregar detalhes do curso:', xhr);
+            Swal.fire('Erro!', 'Erro ao carregar os detalhes do curso.', 'error');
+        }
     });
 }
 
+/**
+ * Elimina um curso específico
+ * @param {number} id - ID do curso a eliminar
+ */
 function eliminarCurso(id) {
     Swal.fire({
         title: 'Tem certeza?',
@@ -217,9 +244,6 @@ function eliminarCurso(id) {
             $.ajax({
                 url: `/api/cursos/${id}`,
                 method: 'DELETE',
-                headers: {
-                    'Authorization': 'Bearer ' + (localStorage.getItem('auth_token') || '')
-                },
                 success: function(response) {
                     Swal.fire(
                         'Eliminado!',
@@ -229,13 +253,10 @@ function eliminarCurso(id) {
                     carregarCursos();
                 },
                 error: function(xhr) {
-                    let msg = 'Ocorreu um erro ao eliminar o curso.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
+                    console.error('Erro ao eliminar curso:', xhr);
                     Swal.fire(
                         'Erro!',
-                        msg,
+                        'Ocorreu um erro ao eliminar o curso.',
                         'error'
                     );
                 }

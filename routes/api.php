@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\AuthController;
 
 // Rotas de autenticação
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum,web'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 });
@@ -32,7 +32,7 @@ use App\Http\Controllers\Api\ProdutoController;
 use App\Http\Controllers\Api\PreInscricaoController;
 
 
-// Rotas públicas de leitura
+// Rotas de leitura - públicas mas com dados completos se autenticado
 Route::get('/centros', [CentroController::class, 'index'])->name('api.centros.index');
 Route::get('/centros/{id}', [CentroController::class, 'show']);
 
@@ -53,11 +53,18 @@ Route::get('/produtos/em-destaque', [ProdutoController::class, 'emDestaque']);
 Route::get('/produtos/{produto}', [ProdutoController::class, 'show']);
 Route::get('/categorias/{categoria}/produtos', [ProdutoController::class, 'porCategoria']);
 
+// Rotas protegidas de leitura admin apenas
+Route::middleware(['auth:sanctum,web'])->group(function () {
+    Route::get('/pre-inscricoes', [PreInscricaoController::class, 'index'])->name('api.pre-inscricoes.index');
+    Route::get('/pre-inscricoes/{id}', [PreInscricaoController::class, 'show']);
+});
+
 // Apenas o público pode criar pré-inscrições
 Route::post('/pre-inscricoes', [PreInscricaoController::class, 'store'])->name('api.pre-inscricoes.store');
 
 // Rotas protegidas para admin (CRUD completo, exceto POST de pre-inscricoes)
-Route::middleware('auth:sanctum')->group(function () {
+// Aceita tanto autenticação via sessão web quanto token API
+Route::middleware(['auth:sanctum,web'])->group(function () {
     // Centros
     Route::post('/centros', [CentroController::class, 'store']);
     Route::put('/centros/{id}', [CentroController::class, 'update']);
@@ -88,11 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/produtos/{produto}', [ProdutoController::class, 'update']);
     Route::delete('/produtos/{produto}', [ProdutoController::class, 'destroy']);
 
-    // Pre-inscrições (admin pode ver, editar, deletar)
-
-    Route::get('/pre-inscricoes', [PreInscricaoController::class, 'index'])->name('api.pre-inscricoes.index');
-
-    Route::get('/pre-inscricoes/{id}', [PreInscricaoController::class, 'show']);
+    // Pre-inscrições (admin pode editar, deletar - ver está em grupo separado acima)
     Route::put('/pre-inscricoes/{id}', [PreInscricaoController::class, 'update']);
     Route::delete('/pre-inscricoes/{id}', [PreInscricaoController::class, 'destroy']);
 });

@@ -43,6 +43,57 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Handle an incoming API authentication request that creates a web session.
+     * 
+     * Este método permite que o frontend faça login via AJAX e obtenha tanto
+     * um token de API quanto uma sessão web válida, resolvendo o problema
+     * de autenticação híbrida (web + API) do sistema MC Comercial.
+     * 
+     * Funcionalidades:
+     * - Valida credenciais do usuário
+     * - Cria sessão web segura
+     * - Gera token API para requisições AJAX
+     * - Retorna dados em formato JSON para o frontend
+     * 
+     * @param Request $request Requisição contendo email e password
+     * @return JsonResponse Resposta com token, usuário e URL de redirecionamento
+     */
+    public function apiLogin(Request $request)
+    {
+        // Validação dos dados de entrada
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        // Tentativa de autenticação
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            // Regenera a sessão por segurança
+            $request->session()->regenerate();
+
+            // Obtém o usuário autenticado
+            $user = Auth::user();
+            
+            // Cria um token de API para uso futuro se necessário
+            $token = $user->createToken('web-session')->plainTextToken;
+
+            // Retorna resposta JSON com sucesso
+            return response()->json([
+                'success' => true,
+                'token' => $token,
+                'user' => $user,
+                'redirect' => '/dashboard'
+            ]);
+        }
+
+        // Retorna erro em caso de credenciais inválidas
+        return response()->json([
+            'success' => false,
+            'message' => 'As credenciais fornecidas não conferem com os nossos registos.'
+        ], 401);
+    }
+
+    /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse

@@ -38,7 +38,7 @@
                         </div>
                         <h5>Telefone</h5>
                         <p class="text-muted mb-2">Ligue-nos durante o horário de funcionamento</p>
-                        <p class="fw-bold">+351 123 456 789</p>
+                        <p class="fw-bold">+244 929-643-510<br>+244 928-966-002</p>
                         <small class="text-muted">Seg - Sex: 9h00 - 18h00</small>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                         <h5>Email</h5>
                         <p class="text-muted mb-2">Envie-nos um email e responderemos em breve</p>
                         <p class="fw-bold">
-                            <a href="mailto:info@mcformacao.pt">info@mcformacao.pt</a>
+                            <a href="mailto:mucuanha.chineva@gmail.com">mucuanha.chineva@gmail.com</a>
                         </p>
                         <small class="text-muted">Resposta em até 24h</small>
                     </div>
@@ -68,7 +68,7 @@
                         </div>
                         <h5>Sede Principal</h5>
                         <p class="text-muted mb-2">Visite-nos na nossa sede</p>
-                        <p class="fw-bold">Rua Principal, 123<br>1000-001 Lisboa</p>
+                        <p class="fw-bold">Rua A, Bairro 1º de Maio<br>Nº 05, 1º Andar, Luanda-Viana</p>
                         <small class="text-muted">Estacionamento disponível</small>
                     </div>
                 </div>
@@ -353,7 +353,7 @@ function exibirCentrosLocalizacao(centros) {
                             ${centro.email ? `<small class="d-block text-muted mb-1">${centro.email}</small>` : ''}
                             ${contactosHtml}
                             <div class="mt-3">
-                                <a href="{{ route('site.centro.detalhes', '') }}/${centro.id}" class="btn btn-outline-primary btn-sm">
+                                <a href="{{ route('site.centro', '') }}/${centro.id}" class="btn btn-outline-primary btn-sm">
                                     <i class="fas fa-eye me-1"></i>Ver Detalhes
                                 </a>
                             </div>

@@ -25,6 +25,14 @@ class SiteController extends Controller
     }
 
     /**
+     * Página de cursos
+     */
+    public function cursos()
+    {
+        return view('site.cursos');
+    }
+
+    /**
      * Página de um centro específico
      */
     public function centro(Centro $centro)

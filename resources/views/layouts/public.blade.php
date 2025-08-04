@@ -6,6 +6,7 @@
     <title>@yield('title') - MC-COMERCIAL</title>
     <meta name="description" content="Centro de formação profissional especializado em diversas áreas do conhecimento">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -575,9 +576,9 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <i class="fas fa-envelope me-2"></i>info@mcformacao.pt
+                    <i class="fas fa-envelope me-2"></i>mucuanha.chineva@gmail.com
                     <span class="mx-3">|</span>
-                    <i class="fas fa-phone me-2"></i>+351 123 456 789
+                    <i class="fas fa-phone me-2"></i>+244 929-643-510
                 </div>
                 <div class="col-md-6 text-md-end">
                     <i class="fas fa-clock me-2"></i>Seg - Sex: 9h00 - 18h00
@@ -605,6 +606,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('site.centros*') ? 'active' : '' }}" href="{{ route('site.centros') }}">Centros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('site.cursos') ? 'active' : '' }}" href="{{ route('site.cursos') }}">Cursos</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('site.sobre') ? 'active' : '' }}" href="{{ route('site.sobre') }}">Sobre Nós</a>

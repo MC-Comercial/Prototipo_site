@@ -79,8 +79,15 @@ $(document).ready(function() {
     carregarProdutos();
 });
 
+/**
+ * Carrega a lista de produtos via API
+ * Inclui produtos inativos para gestão completa
+ */
 function carregarProdutos() {
-    $.get('/api/produtos?incluir_inativos=1', function(data) {
+    $.ajax({
+        url: '/api/produtos?incluir_inativos=1',
+        method: 'GET',
+        success: function(data) {
         let html = '';
         
         if (data.length === 0) {
@@ -150,55 +157,97 @@ function carregarProdutos() {
                  '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             order: [[0, 'desc']]
         });
-    });
-}
-
-function visualizarProduto(id) {
-    $.get(`/api/produtos/${id}`, function(response) {
-        // Se a resposta vem com status e dados, extrair dados
-        const produto = response.dados || response;
-        const statusBadge = produto.ativo 
-            ? '<span class="badge bg-success">Ativo</span>' 
-            : '<span class="badge bg-secondary">Inativo</span>';
-        
-        const destaqueBadge = produto.em_destaque 
-            ? '<span class="badge bg-warning text-dark">Em Destaque</span>' 
-            : '<span class="badge bg-light text-dark">Normal</span>';
-        
-        const imagem = produto.imagem_url 
-            ? `<img src="${produto.imagem_url}" alt="Imagem do produto" class="img-fluid rounded" style="max-height: 200px;">` 
-            : '<div class="alert alert-light text-center"><i class="fas fa-image fa-3x text-muted"></i><br>Sem imagem</div>';
-        
-        const preco = produto.preco ? `€${parseFloat(produto.preco).toFixed(2)}` : 'Preço não definido';
-        
-        let html = `
-            <div class="row">
-                <div class="col-md-4 text-center mb-3">
-                    ${imagem}
-                </div>
-                <div class="col-md-8">
-                    <h4>${produto.nome}</h4>
-                    <p class="mb-2"><strong>Preço:</strong> <span class="h5 text-success">${preco}</span></p>
-                    <p class="mb-2"><strong>Categoria:</strong> ${produto.categoria ? produto.categoria.nome : 'Sem categoria'}</p>
-                    <p class="mb-2"><strong>Status:</strong> ${statusBadge}</p>
-                    <p class="mb-2"><strong>Destaque:</strong> ${destaqueBadge}</p>
-                    <p class="mb-2"><strong>Data de Criação:</strong> ${new Date(produto.created_at).toLocaleDateString('pt-PT')}</p>
-                </div>
-            </div>
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
             
-            ${produto.descricao ? `
-                <div class="mt-3">
-                    <h6><strong>Descrição:</strong></h6>
-                    <p class="text-muted">${produto.descricao}</p>
-                </div>
-            ` : ''}
-        `;
-        
-        $('#viewModalContent').html(html);
-        $('#viewModal').modal('show');
+            $('#produtosTable tbody').html(`
+                <tr>
+                    <td colspan="9" class="text-center text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Erro ao carregar produtos: ${xhr.responseJSON?.message || 'Erro desconhecido'}
+                    </td>
+                </tr>
+            `);
+        }
     });
 }
 
+/**
+ * Exibe os detalhes de um produto específico em modal
+ * @param {number} id - ID do produto a visualizar
+ */
+function visualizarProduto(id) {
+    $.ajax({
+        url: `/api/produtos/${id}`,
+        method: 'GET',
+        success: function(response) {
+            // Se a resposta vem com status e dados, extrair dados
+            const produto = response.dados || response;
+            const statusBadge = produto.ativo 
+                ? '<span class="badge bg-success">Ativo</span>' 
+                : '<span class="badge bg-secondary">Inativo</span>';
+            
+            const destaqueBadge = produto.em_destaque 
+                ? '<span class="badge bg-warning text-dark">Em Destaque</span>' 
+                : '<span class="badge bg-light text-dark">Normal</span>';
+            
+            const imagem = produto.imagem_url 
+                ? `<img src="${produto.imagem_url}" alt="Imagem do produto" class="img-fluid rounded" style="max-height: 200px;">` 
+                : '<div class="alert alert-light text-center"><i class="fas fa-image fa-3x text-muted"></i><br>Sem imagem</div>';
+            
+            const preco = produto.preco ? `€${parseFloat(produto.preco).toFixed(2)}` : 'Preço não definido';
+            
+            let html = `
+                <div class="row">
+                    <div class="col-md-4 text-center mb-3">
+                        ${imagem}
+                    </div>
+                    <div class="col-md-8">
+                        <h4>${produto.nome}</h4>
+                        <p class="mb-2"><strong>Preço:</strong> <span class="h5 text-success">${preco}</span></p>
+                        <p class="mb-2"><strong>Categoria:</strong> ${produto.categoria ? produto.categoria.nome : 'Sem categoria'}</p>
+                        <p class="mb-2"><strong>Status:</strong> ${statusBadge}</p>
+                        <p class="mb-2"><strong>Destaque:</strong> ${destaqueBadge}</p>
+                        <p class="mb-2"><strong>Data de Criação:</strong> ${new Date(produto.created_at).toLocaleDateString('pt-PT')}</p>
+                    </div>
+                </div>
+                
+                ${produto.descricao ? `
+                    <div class="mt-3">
+                        <h6><strong>Descrição:</strong></h6>
+                        <p class="text-muted">${produto.descricao}</p>
+                    </div>
+                ` : ''}
+            `;
+            
+            $('#viewModalContent').html(html);
+            $('#viewModal').modal('show');
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
+            
+            Swal.fire(
+                'Erro!',
+                'Erro ao carregar detalhes do produto: ' + (xhr.responseJSON?.message || 'Erro desconhecido'),
+                'error'
+            );
+        }
+    });
+}
+
+/**
+ * Elimina um produto após confirmação do utilizador
+ * @param {number} id - ID do produto a eliminar
+ */
 function eliminarProduto(id) {
     Swal.fire({
         title: 'Tem certeza?',
@@ -223,9 +272,15 @@ function eliminarProduto(id) {
                     carregarProdutos();
                 },
                 error: function(xhr) {
+                    if (xhr.status === 401) {
+                        localStorage.removeItem('auth_token');
+                        window.location.href = '/login';
+                        return;
+                    }
+                    
                     Swal.fire(
                         'Erro!',
-                        'Ocorreu um erro ao eliminar o produto.',
+                        'Erro ao eliminar produto: ' + (xhr.responseJSON?.message || 'Erro desconhecido'),
                         'error'
                     );
                 }

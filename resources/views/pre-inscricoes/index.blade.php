@@ -113,20 +113,6 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-        window.location.href = '/login';
-        return;
-    }
-    
-    // Configurar token para requisições AJAX
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-            'Authorization': 'Bearer ' + token
-        }
-    });
-    
     carregarDados();
     carregarCursos();
     carregarCentros();

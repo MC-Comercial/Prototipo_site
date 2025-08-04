@@ -228,9 +228,15 @@ $(document).ready(function() {
     carregarUltimasInscricoes();
 });
 
+/**
+ * Carrega as estatísticas do dashboard fazendo requisições autenticadas para a API
+ */
 function carregarEstatisticas() {
     // Carregar total de cursos
-    $.get('/api/cursos', function(data) {
+    $.ajax({
+        url: '/api/cursos',
+        method: 'GET',
+        success: function(data) {
         $('#total-cursos').text(data.length);
         
         const online = data.filter(curso => curso.modalidade === 'online').length;
@@ -244,20 +250,53 @@ function carregarEstatisticas() {
             $('#progress-online').css('width', (online / total * 100) + '%');
             $('#progress-presencial').css('width', (presencial / total * 100) + '%');
         }
+        },
+        error: function(xhr) {
+            console.error('Erro ao carregar cursos:', xhr);
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+            }
+        }
     });
     
     // Carregar total de centros
-    $.get('/api/centros', function(data) {
-        $('#total-centros').text(data.length);
+    $.ajax({
+        url: '/api/centros',
+        method: 'GET',
+        success: function(data) {
+            $('#total-centros').text(data.length);
+        },
+        error: function(xhr) {
+            console.error('Erro ao carregar centros:', xhr);
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+            }
+        }
     });
     
     // Carregar total de formadores
-    $.get('/api/formadores', function(data) {
-        $('#total-formadores').text(data.length);
+    $.ajax({
+        url: '/api/formadores',
+        method: 'GET',
+        success: function(data) {
+            $('#total-formadores').text(data.length);
+        },
+        error: function(xhr) {
+            console.error('Erro ao carregar formadores:', xhr);
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+            }
+        }
     });
     
     // Carregar pré-inscrições
-    $.get('/api/pre-inscricoes', function(data) {
+    $.ajax({
+        url: '/api/pre-inscricoes',
+        method: 'GET',
+        success: function(data) {
         const pendentes = data.filter(inscricao => inscricao.status === 'pendente').length;
         $('#total-pre-inscricoes').text(pendentes);
         $('#pendentes').text(pendentes);
@@ -265,11 +304,25 @@ function carregarEstatisticas() {
         if (data.length > 0) {
             $('#progress-pendentes').css('width', (pendentes / data.length * 100) + '%');
         }
+        },
+        error: function(xhr) {
+            console.error('Erro ao carregar pré-inscrições:', xhr);
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+            }
+        }
     });
 }
 
+/**
+ * Carrega as últimas pré-inscrições para exibir na tabela do dashboard
+ */
 function carregarUltimasInscricoes() {
-    $.get('/api/pre-inscricoes', function(data) {
+    $.ajax({
+        url: '/api/pre-inscricoes',
+        method: 'GET',
+        success: function(data) {
         let html = '';
         
         if (data.length === 0) {
@@ -297,9 +350,22 @@ function carregarUltimasInscricoes() {
         }
         
         $('#ultimas-inscricoes').html(html);
+        },
+        error: function(xhr) {
+            console.error('Erro ao carregar últimas inscrições:', xhr);
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+            }
+        }
     });
 }
 
+/**
+ * Retorna a classe CSS adequada para o status da pré-inscrição
+ * @param {string} status - O status da pré-inscrição
+ * @returns {string} - A classe CSS correspondente
+ */
 function getStatusClass(status) {
     switch(status) {
         case 'pendente': return 'bg-warning text-dark';
@@ -309,6 +375,11 @@ function getStatusClass(status) {
     }
 }
 
+/**
+ * Retorna o texto legível para o status da pré-inscrição
+ * @param {string} status - O status da pré-inscrição
+ * @returns {string} - O texto correspondente ao status
+ */
 function getStatusText(status) {
     switch(status) {
         case 'pendente': return 'Pendente';

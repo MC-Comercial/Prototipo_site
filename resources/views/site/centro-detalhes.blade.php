@@ -203,7 +203,7 @@ let cursosDisponiveis = [];
 let horariosDisponiveis = [];
 
 $(document).ready(function() {
-    const centroId = {{ request()->route('id') ?? 'null' }};
+    const centroId = {{ $centro->id ?? 'null' }};
     
     if (centroId) {
         carregarCentro(centroId);
@@ -299,9 +299,9 @@ function exibirCentro(centro) {
 }
 
 function carregarCursos(centroId) {
-    $.get('/api/cursos', function(cursos) {
-        // Filtrar apenas cursos ativos
-        cursosDisponiveis = cursos.filter(curso => curso.ativo);
+    $.get(`/api/cursos?centros=${centroId}&ativo=1`, function(cursos) {
+        // Os cursos já vêm filtrados pelo centro e apenas ativos
+        cursosDisponiveis = cursos;
         
         // Preencher filtro de áreas
         const areas = [...new Set(cursosDisponiveis.map(curso => curso.area))];
@@ -311,6 +311,17 @@ function carregarCursos(centroId) {
         });
         
         exibirCursos();
+    }).fail(function() {
+        $('#cursos-container').html(`
+            <div class="text-center py-5">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h5>Erro ao carregar cursos</h5>
+                <p class="text-muted">Tente novamente mais tarde.</p>
+                <button class="btn btn-primary" onclick="carregarCursos(${centroId})">
+                    <i class="fas fa-redo me-2"></i>Tentar Novamente
+                </button>
+            </div>
+        `);
     });
 }
 
@@ -363,6 +374,18 @@ function exibirCursos() {
                      <i class="fas fa-book fa-3x text-muted"></i>
                    </div>`;
 
+            // Encontrar dados específicos deste centro
+            const centroDados = curso.centros && curso.centros.find(c => c.id == centroAtual?.id);
+            const precoInfo = centroDados?.pivot?.preco 
+                ? `<p class="card-text"><strong>Preço:</strong> ${parseFloat(centroDados.pivot.preco).toLocaleString('pt-AO')} AOA</p>`
+                : '';
+            const duracaoInfo = centroDados?.pivot?.duracao 
+                ? `<p class="card-text"><strong>Duração:</strong> ${centroDados.pivot.duracao}</p>`
+                : '';
+            const dataArranqueInfo = centroDados?.pivot?.data_arranque 
+                ? `<p class="card-text"><strong>Início:</strong> ${new Date(centroDados.pivot.data_arranque).toLocaleDateString('pt-PT')}</p>`
+                : '';
+
             html += `
                 <div class="card mb-4">
                     <div class="row g-0">
@@ -372,12 +395,15 @@ function exibirCursos() {
                         <div class="col-md-8">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h5 class="card-title">${curso.nome}</h5>
+                                    <h5 class="card-title">${curso.nome || 'Nome não disponível'}</h5>
                                     ${modalidadeBadge}
                                 </div>
                                 <p class="card-text">
-                                    <strong>Área:</strong> ${curso.area}
+                                    <strong>Área:</strong> ${curso.area || 'Não especificada'}
                                 </p>
+                                ${precoInfo}
+                                ${duracaoInfo}
+                                ${dataArranqueInfo}
                                 ${curso.descricao ? `
                                     <p class="card-text text-muted">${curso.descricao}</p>
                                 ` : ''}
@@ -389,7 +415,7 @@ function exibirCursos() {
                                         </div>
                                     </details>
                                 ` : ''}
-                                <button class="btn btn-primary" onclick="abrirPreInscricao(${curso.id}, '${curso.nome}')">
+                                <button class="btn btn-primary" onclick="abrirPreInscricao(${curso.id}, '${(curso.nome || 'Curso').replace(/'/g, '\\&apos;')}')">
                                     <i class="fas fa-user-plus me-2"></i>Fazer Pré-Inscrição
                                 </button>
                             </div>
@@ -404,12 +430,15 @@ function exibirCursos() {
 }
 
 function abrirPreInscricao(cursoId, cursoNome) {
-    if (!centroAtual) return;
+    if (!centroAtual) {
+        alert('Erro: Informações do centro não carregadas. Recarregue a página.');
+        return;
+    }
     
-    $('#modal_curso_id').val(cursoId);
-    $('#modal_centro_id').val(centroAtual.id);
-    $('#modal_curso_nome').text(cursoNome);
-    $('#modal_centro_nome').text(centroAtual.nome);
+    $('#modal_curso_id').val(cursoId || '');
+    $('#modal_centro_id').val(centroAtual.id || '');
+    $('#modal_curso_nome').text(cursoNome || 'Curso');
+    $('#modal_centro_nome').text(centroAtual.nome || 'Centro');
     
     // Carregar horários para este curso
     const horariosEste = horariosDisponiveis.filter(h => h.curso_id == cursoId);
@@ -465,8 +494,8 @@ function submeterPreInscricao() {
     $('#modal-contactos-container .input-group').each(function() {
         const tipo = $(this).find('.contacto-tipo').val();
         const valor = $(this).find('.contacto-valor').val();
-        if (valor.trim()) {
-            contactos.push({ tipo, valor });
+        if (valor && valor.trim()) {
+            contactos.push({ tipo, valor: valor.trim() });
         }
     });
 
@@ -475,14 +504,28 @@ function submeterPreInscricao() {
         return;
     }
 
+    const nomeCompleto = $('input[name="nome_completo"]').val();
+    if (!nomeCompleto || !nomeCompleto.trim()) {
+        alert('Nome completo é obrigatório.');
+        return;
+    }
+
+    const cursoId = $('#modal_curso_id').val();
+    const centroId = $('#modal_centro_id').val();
+    
+    if (!cursoId || !centroId) {
+        alert('Erro: Dados do curso ou centro não encontrados.');
+        return;
+    }
+
     const dados = {
-        curso_id: parseInt($('#modal_curso_id').val()),
-        centro_id: parseInt($('#modal_centro_id').val()),
+        curso_id: parseInt(cursoId),
+        centro_id: parseInt(centroId),
         horario_id: $('#modal_horarios').val() ? parseInt($('#modal_horarios').val()) : null,
-        nome_completo: $('input[name="nome_completo"]').val(),
-        email: $('input[name="email"]').val() || null,
+        nome_completo: nomeCompleto.trim(),
+        email: $('input[name="email"]').val()?.trim() || null,
         contactos: JSON.stringify(contactos),
-        observacoes: $('textarea[name="observacoes"]').val() || null
+        observacoes: $('textarea[name="observacoes"]').val()?.trim() || null
     };
 
     $.ajax({
@@ -496,7 +539,18 @@ function submeterPreInscricao() {
             $('#sucessoModal').modal('show');
         },
         error: function(xhr) {
-            alert('Erro ao enviar pré-inscrição. Tente novamente.');
+            console.error('Erro na pré-inscrição:', xhr);
+            let mensagem = 'Erro ao enviar pré-inscrição. Tente novamente.';
+            
+            if (xhr.responseJSON && xhr.responseJSON.mensagem) {
+                mensagem = xhr.responseJSON.mensagem;
+            } else if (xhr.status === 422) {
+                mensagem = 'Dados inválidos. Verifique os campos preenchidos.';
+            } else if (xhr.status === 500) {
+                mensagem = 'Erro interno do servidor. Tente novamente mais tarde.';
+            }
+            
+            alert(mensagem);
         }
     });
 }

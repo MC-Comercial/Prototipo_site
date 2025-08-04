@@ -79,8 +79,15 @@ $(document).ready(function() {
     carregarHorarios();
 });
 
+/**
+ * Carrega e exibe a lista de horários
+ * @function carregarHorarios
+ */
 function carregarHorarios() {
-    $.get('/api/horarios', function(data) {
+    $.ajax({
+        url: '/api/horarios',
+        method: 'GET',
+        success: function(data) {
         let html = '';
         
         if (data.length === 0) {
@@ -146,9 +153,25 @@ function carregarHorarios() {
                  '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             order: [[0, 'desc']]
         });
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
+            
+            let html = '<tr><td colspan="9" class="text-center text-danger">Erro ao carregar horários. Tente novamente.</td></tr>';
+            $('#horariosTable tbody').html(html);
+        }
     });
 }
 
+/**
+ * Obtém a badge formatada para o período do horário
+ * @param {string} periodo - O período (manhã, tarde, noite)
+ * @returns {string} HTML da badge formatada
+ */
 function getPeriodoBadge(periodo) {
     switch(periodo) {
         case 'manhã':
@@ -162,6 +185,11 @@ function getPeriodoBadge(periodo) {
     }
 }
 
+/**
+ * Formata o nome do dia da semana
+ * @param {string} dia - Dia da semana abreviado
+ * @returns {string} Nome completo do dia da semana
+ */
 function getDiaSemanaFormatado(dia) {
     const dias = {
         'Segunda': 'Segunda-feira',
@@ -175,8 +203,15 @@ function getDiaSemanaFormatado(dia) {
     return dias[dia] || dia;
 }
 
+/**
+ * Exibe os detalhes de um horário específico em modal
+ * @param {number} id - ID do horário a visualizar
+ */
 function visualizarHorario(id) {
-    $.get(`/api/horarios/${id}`, function(horario) {
+    $.ajax({
+        url: `/api/horarios/${id}`,
+        method: 'GET',
+        success: function(horario) {
         const periodoBadge = getPeriodoBadge(horario.periodo);
         const diaSemana = getDiaSemanaFormatado(horario.dia_semana);
         
@@ -233,9 +268,27 @@ function visualizarHorario(id) {
         
         $('#viewModalContent').html(html);
         $('#viewModal').modal('show');
+        },
+        error: function(xhr) {
+            if (xhr.status === 401) {
+                localStorage.removeItem('auth_token');
+                window.location.href = '/login';
+                return;
+            }
+            
+            Swal.fire(
+                'Erro!',
+                'Ocorreu um erro ao carregar os detalhes do horário.',
+                'error'
+            );
+        }
     });
 }
 
+/**
+ * Remove um horário após confirmação do utilizador
+ * @param {number} id - ID do horário a eliminar
+ */
 function eliminarHorario(id) {
     Swal.fire({
         title: 'Tem certeza?',
@@ -260,6 +313,12 @@ function eliminarHorario(id) {
                     carregarHorarios();
                 },
                 error: function(xhr) {
+                    if (xhr.status === 401) {
+                        localStorage.removeItem('auth_token');
+                        window.location.href = '/login';
+                        return;
+                    }
+                    
                     Swal.fire(
                         'Erro!',
                         'Ocorreu um erro ao eliminar o horário.',

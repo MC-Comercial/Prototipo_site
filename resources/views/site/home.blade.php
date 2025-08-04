@@ -17,7 +17,7 @@
                         Prepare-se para os desafios do mercado de trabalho com os nossos cursos especializados.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
-                        <a href="{{ route('site.centros') }}" class="btn btn-light btn-lg">
+                        <a href="{{ route('site.cursos') }}" class="btn btn-light btn-lg">
                             <i class="fas fa-search me-2"></i>Explorar Cursos
                         </a>
                         <a href="#sobre" class="btn btn-outline-light btn-lg">
@@ -193,7 +193,7 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4">
-                <h2 class="section-title text-start">Por que escolher a MC Formação?</h2>
+                <h2 class="section-title text-start">Por que escolher a MC Comercial?</h2>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="d-flex">
@@ -255,7 +255,7 @@
             
             <div class="col-lg-6 text-center">
                 <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                     alt="Equipa MC Formação" 
+                     alt="Equipa MC Comercial"
                      class="img-fluid rounded-3 shadow-lg"
                      style="max-height: 400px; object-fit: cover;">
             </div>

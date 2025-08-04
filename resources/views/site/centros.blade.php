@@ -56,7 +56,7 @@
                     <a href="{{ route('site.contactos') }}" class="btn btn-primary">
                         <i class="fas fa-phone me-2"></i>Contactar-nos
                     </a>
-                    <a href="mailto:info@mcformacao.pt" class="btn btn-outline-primary">
+                    <a href="mailto:mucuanha.chineva@gmail.com" class="btn btn-outline-primary">
                         <i class="fas fa-envelope me-2"></i>Enviar Email
                     </a>
                 </div>

@@ -134,6 +134,15 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Configurar headers AJAX globalmente
+    $.ajaxSetup({
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     const cursoId = {{ request()->route('id') ?? 'null' }};
     
     if (cursoId) {
@@ -179,7 +188,12 @@ function carregarCurso(id) {
             // Atualizar preview inicial
             atualizarPreview();
         })
-        .fail(function() {
+        .fail(function(xhr) {
+            if (xhr.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            
             Swal.fire('Erro!', 'Curso não encontrado.', 'error').then(() => {
                 window.location.href = '{{ route("cursos.index") }}';
             });
@@ -279,6 +293,13 @@ function atualizarCurso() {
             });
         },
         error: function(xhr) {
+            console.error('Erro ao atualizar curso:', xhr);
+            
+            if (xhr.status === 401) {
+                window.location.href = '/login';
+                return;
+            }
+            
             let message = 'Ocorreu um erro ao atualizar o curso.';
             
             if (xhr.responseJSON && xhr.responseJSON.message) {
