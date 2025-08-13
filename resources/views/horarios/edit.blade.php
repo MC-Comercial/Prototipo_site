@@ -29,19 +29,23 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="text-center mb-4" id="loadingIndicator">
-                        <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
-                        <p class="mt-2">Carregando dados do horário...</p>
-                    </div>
-
-                    <form id="horarioForm" style="display: none;">
-                        <input type="hidden" id="horario_id" name="id" value="{{ $id ?? '' }}">
+                    <form id="horarioForm" method="POST" action="{{ route('horarios.update', $horario->id) }}">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" id="horario_id" name="id" value="{{ $horario->id }}">
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="curso_id" class="form-label">Curso <span class="text-danger">*</span></label>
                                 <select class="form-select" id="curso_id" name="curso_id" required>
                                     <option value="">Selecione o curso</option>
+                                    @foreach($cursos as $curso)
+                                        @if($curso->ativo)
+                                            <option value="{{ $curso->id }}" {{ $horario->curso_id == $curso->id ? 'selected' : '' }}>
+                                                {{ $curso->nome }} - {{ $curso->area }}
+                                            </option>
+                                        @endif
+                                    @endforeach
                                 </select>
                                 <div class="form-text">Escolha o curso para este horário</div>
                             </div>
@@ -50,6 +54,13 @@
                                 <label for="centro_id" class="form-label">Centro <span class="text-danger">*</span></label>
                                 <select class="form-select" id="centro_id" name="centro_id" required>
                                     <option value="">Selecione o centro</option>
+                                    @foreach($centros as $centro)
+                                        @if($centro->ativo)
+                                            <option value="{{ $centro->id }}" {{ $horario->centro_id == $centro->id ? 'selected' : '' }}>
+                                                {{ $centro->nome }} - {{ $centro->distrito }}
+                                            </option>
+                                        @endif
+                                    @endforeach
                                 </select>
                                 <div class="form-text">Escolha o centro onde será ministrado</div>
                             </div>
@@ -60,13 +71,13 @@
                                 <label for="dia_semana" class="form-label">Dia da Semana <span class="text-danger">*</span></label>
                                 <select class="form-select" id="dia_semana" name="dia_semana" required>
                                     <option value="">Selecione o dia</option>
-                                    <option value="Segunda">Segunda-feira</option>
-                                    <option value="Terça">Terça-feira</option>
-                                    <option value="Quarta">Quarta-feira</option>
-                                    <option value="Quinta">Quinta-feira</option>
-                                    <option value="Sexta">Sexta-feira</option>
-                                    <option value="Sábado">Sábado</option>
-                                    <option value="Domingo">Domingo</option>
+                                    <option value="Segunda" {{ $horario->dia_semana == 'Segunda' ? 'selected' : '' }}>Segunda-feira</option>
+                                    <option value="Terça" {{ $horario->dia_semana == 'Terça' ? 'selected' : '' }}>Terça-feira</option>
+                                    <option value="Quarta" {{ $horario->dia_semana == 'Quarta' ? 'selected' : '' }}>Quarta-feira</option>
+                                    <option value="Quinta" {{ $horario->dia_semana == 'Quinta' ? 'selected' : '' }}>Quinta-feira</option>
+                                    <option value="Sexta" {{ $horario->dia_semana == 'Sexta' ? 'selected' : '' }}>Sexta-feira</option>
+                                    <option value="Sábado" {{ $horario->dia_semana == 'Sábado' ? 'selected' : '' }}>Sábado</option>
+                                    <option value="Domingo" {{ $horario->dia_semana == 'Domingo' ? 'selected' : '' }}>Domingo</option>
                                 </select>
                             </div>
                             
@@ -74,9 +85,9 @@
                                 <label for="periodo" class="form-label">Período <span class="text-danger">*</span></label>
                                 <select class="form-select" id="periodo" name="periodo" required>
                                     <option value="">Selecione o período</option>
-                                    <option value="manhã">Manhã</option>
-                                    <option value="tarde">Tarde</option>
-                                    <option value="noite">Noite</option>
+                                    <option value="manhã" {{ $horario->periodo == 'manhã' ? 'selected' : '' }}>Manhã</option>
+                                    <option value="tarde" {{ $horario->periodo == 'tarde' ? 'selected' : '' }}>Tarde</option>
+                                    <option value="noite" {{ $horario->periodo == 'noite' ? 'selected' : '' }}>Noite</option>
                                 </select>
                             </div>
                         </div>
@@ -84,13 +95,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="hora_inicio" class="form-label">Hora de Início</label>
-                                <input type="time" class="form-control" id="hora_inicio" name="hora_inicio">
+                                <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" value="{{ $horario->hora_inicio ? substr($horario->hora_inicio, 0, 5) : '' }}">
                                 <div class="form-text">Opcional - Hora específica de início</div>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label for="hora_fim" class="form-label">Hora de Fim</label>
-                                <input type="time" class="form-control" id="hora_fim" name="hora_fim">
+                                <input type="time" class="form-control" id="hora_fim" name="hora_fim" value="{{ $horario->hora_fim ? substr($horario->hora_fim, 0, 5) : '' }}">
                                 <div class="form-text">Opcional - Hora específica de término</div>
                             </div>
                         </div>
@@ -139,6 +150,25 @@
                 </div>
             </div>
 
+            <div class="card mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Informações
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>ID:</strong> {{ $horario->id }}</p>
+                    <p><strong>Data de Criação:</strong><br><small>{{ $horario->created_at->format('d/m/Y H:i') }}</small></p>
+                    <p><strong>Última Atualização:</strong><br><small>{{ $horario->updated_at->format('d/m/Y H:i') }}</small></p>
+                    <hr>
+                    <h6 class="text-warning">Atenção:</h6>
+                    <ul class="small">
+                        <li>As alterações serão salvas imediatamente</li>
+                        <li>Certifique-se de que todos os dados estão corretos</li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="card mt-3" id="previewCard" style="display: none;">
                 <div class="card-header bg-success text-white">
                     <h6 class="mb-0">
@@ -149,17 +179,6 @@
                     <!-- Preview será gerado aqui -->
                 </div>
             </div>
-
-            <div class="card mt-3" id="infoCard" style="display: none;">
-                <div class="card-header bg-warning text-dark">
-                    <h6 class="mb-0">
-                        <i class="fas fa-history me-2"></i>Informações
-                    </h6>
-                </div>
-                <div class="card-body" id="infoContent">
-                    <!-- Informações adicionais serão geradas aqui -->
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -167,18 +186,12 @@
 
 @section('scripts')
 <script>
-let horarioData = null;
+const horarioId = {{ $horario->id ?? 'null' }};
 
 $(document).ready(function() {
-    const horarioId = getHorarioIdFromUrl();
-    if (horarioId) {
-        $('#horario_id').val(horarioId);
-        carregarCursos();
-        carregarCentros();
-        carregarHorario(horarioId);
-    } else {
-        showError('ID do horário não encontrado na URL');
-    }
+    // Os dados já estão carregados no formulário via Blade
+    // Apenas inicializar o preview
+    atualizarPreview();
     
     // Preview em tempo real
     $('#horarioForm select, #horarioForm input').on('change input', function() {
@@ -186,103 +199,8 @@ $(document).ready(function() {
         validarHorarios();
     });
 
-    // Submit do formulário
-    $('#horarioForm').on('submit', function(e) {
-        e.preventDefault();
-        if (validarHorarios()) {
-            atualizarHorario();
-        }
-    });
+    // Submit do formulário - usando submit normal (não AJAX)
 });
-
-function getHorarioIdFromUrl() {
-    const pathParts = window.location.pathname.split('/');
-    return pathParts[pathParts.length - 2]; // Pega o penúltimo segmento (antes de /edit)
-}
-
-function carregarCursos() {
-    $.get('/api/cursos', function(data) {
-        let options = '<option value="">Selecione o curso</option>';
-        data.forEach(function(curso) {
-            if (curso.ativo) {
-                options += `<option value="${curso.id}">${curso.nome} - ${curso.area}</option>`;
-            }
-        });
-        $('#curso_id').html(options);
-        
-        // Se já temos dados do horário, selecionar o curso correto
-        if (horarioData && horarioData.curso_id) {
-            $('#curso_id').val(horarioData.curso_id);
-        }
-    });
-}
-
-function carregarCentros() {
-    $.get('/api/centros', function(data) {
-        let options = '<option value="">Selecione o centro</option>';
-        data.forEach(function(centro) {
-            if (centro.ativo) {
-                options += `<option value="${centro.id}">${centro.nome} - ${centro.distrito}</option>`;
-            }
-        });
-        $('#centro_id').html(options);
-        
-        // Se já temos dados do horário, selecionar o centro correto
-        if (horarioData && horarioData.centro_id) {
-            $('#centro_id').val(horarioData.centro_id);
-        }
-    });
-}
-
-function carregarHorario(id) {
-    $.get(`/api/horarios/${id}`, function(data) {
-        horarioData = data;
-        
-        // Preencher formulário
-        $('#curso_id').val(data.curso_id);
-        $('#centro_id').val(data.centro_id);
-        $('#dia_semana').val(data.dia_semana);
-        $('#periodo').val(data.periodo);
-        
-        if (data.hora_inicio) {
-            $('#hora_inicio').val(data.hora_inicio.substring(0, 5));
-        }
-        if (data.hora_fim) {
-            $('#hora_fim').val(data.hora_fim.substring(0, 5));
-        }
-        
-        // Mostrar informações adicionais
-        mostrarInformacoesAdicionais(data);
-        
-        // Atualizar preview
-        atualizarPreview();
-        
-        // Esconder loading e mostrar formulário
-        $('#loadingIndicator').hide();
-        $('#horarioForm').show();
-        
-    }).fail(function(xhr) {
-        if (xhr.status === 404) {
-            showError('Horário não encontrado');
-        } else {
-            showError('Erro ao carregar dados do horário');
-        }
-    });
-}
-
-function mostrarInformacoesAdicionais(horario) {
-    const dataCreated = new Date(horario.created_at).toLocaleDateString('pt-PT');
-    const dataUpdated = new Date(horario.updated_at).toLocaleDateString('pt-PT');
-    
-    let info = `
-        <p class="mb-2"><strong>ID:</strong> ${horario.id}</p>
-        <p class="mb-2"><strong>Criado em:</strong> ${dataCreated}</p>
-        <p class="mb-0"><strong>Atualizado em:</strong> ${dataUpdated}</p>
-    `;
-    
-    $('#infoContent').html(info);
-    $('#infoCard').show();
-}
 
 function validarHorarios() {
     const horaInicio = $('#hora_inicio').val();
@@ -376,69 +294,6 @@ function getDiaSemanaFormatado(dia) {
         'Domingo': 'Domingo'
     };
     return dias[dia] || dia;
-}
-
-function atualizarHorario() {
-    const formData = {
-        curso_id: parseInt($('#curso_id').val()),
-        centro_id: parseInt($('#centro_id').val()),
-        dia_semana: $('#dia_semana').val(),
-        periodo: $('#periodo').val(),
-        hora_inicio: $('#hora_inicio').val() || null,
-        hora_fim: $('#hora_fim').val() || null
-    };
-
-    const horarioId = $('#horario_id').val();
-
-    $.ajax({
-        url: `/api/horarios/${horarioId}`,
-        method: 'PUT',
-        data: JSON.stringify(formData),
-        contentType: 'application/json',
-        beforeSend: function() {
-            $('#horarioForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Atualizando...');
-        },
-        success: function(response) {
-            Swal.fire({
-                title: 'Sucesso!',
-                text: 'Horário atualizado com sucesso!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '{{ route("horarios.index") }}';
-            });
-        },
-        error: function(xhr) {
-            let message = 'Ocorreu um erro ao atualizar o horário.';
-            
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                message = xhr.responseJSON.message;
-            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                const errors = Object.values(xhr.responseJSON.errors).flat();
-                message = errors.join('<br>');
-            }
-
-            Swal.fire({
-                title: 'Erro!',
-                html: message,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        },
-        complete: function() {
-            $('#horarioForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Atualizar Horário');
-        }
-    });
-}
-
-function showError(message) {
-    $('#loadingIndicator').html(`
-        <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
-        <p class="mt-2 text-danger">${message}</p>
-        <a href="{{ route('horarios.index') }}" class="btn btn-primary mt-2">
-            <i class="fas fa-arrow-left me-2"></i>Voltar à Lista
-        </a>
-    `);
 }
 </script>
 @endsection

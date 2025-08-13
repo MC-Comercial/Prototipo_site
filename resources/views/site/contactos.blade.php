@@ -332,10 +332,16 @@ function exibirCentrosLocalizacao(centros) {
             let contactosHtml = '';
             try {
                 if (centro.contactos) {
-                    const contactos = JSON.parse(centro.contactos);
-                    contactosHtml = contactos.map(c => 
-                        `<small class="d-block text-muted">${c.tipo}: ${c.valor}</small>`
-                    ).join('');
+                    const contactos = typeof centro.contactos === 'string' ? JSON.parse(centro.contactos) : centro.contactos;
+                    if (Array.isArray(contactos)) {
+                        contactosHtml = contactos.map(c => 
+                            `<small class="d-block text-muted">${c.tipo}: ${c.valor}</small>`
+                        ).join('');
+                    } else if (typeof contactos === 'object') {
+                        contactosHtml = Object.entries(contactos).map(([tipo, valor]) => 
+                            `<small class="d-block text-muted">${tipo}: ${valor}</small>`
+                        ).join('');
+                    }
                 }
             } catch (e) {
                 console.log('Erro ao processar contactos:', e);

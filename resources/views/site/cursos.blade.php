@@ -25,9 +25,7 @@
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                     alt="Cursos de Formação" 
-                     class="img-fluid rounded-3 shadow-lg">
+                <img src="/images/banner-11.jpg" alt="Formação Profissional" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px; object-fit: cover;">
             </div>
         </div>
     </div>
@@ -209,8 +207,22 @@ function exibirCursos(cursos) {
     } else {
         cursos.forEach(function(curso) {
             const modalidadeBadge = getModalidadeBadge(curso.modalidade);
-            const centroBadge = curso.centro ? 
-                `<span class="badge bg-secondary me-2">${curso.centro.nome}</span>` : '';
+            
+            // Gerar badges dos centros (pode ser múltiplos)
+            let centrosBadges = '';
+            if (curso.centros && curso.centros.length > 0) {
+                centrosBadges = curso.centros.map(centro => 
+                    `<span class="badge bg-secondary me-1 mb-1">${centro.nome}</span>`
+                ).join('');
+            }
+            
+            // Buscar duração e preço dos centros (pegar o primeiro centro como referência)
+            let duracao = 'A definir';
+            let preco = null;
+            if (curso.centros && curso.centros.length > 0 && curso.centros[0].pivot) {
+                duracao = curso.centros[0].pivot.duracao || 'A definir';
+                preco = curso.centros[0].pivot.preco;
+            }
             
             html += `
                 <div class="col-lg-4 col-md-6 mb-4">
@@ -223,7 +235,7 @@ function exibirCursos(cursos) {
                             <div class="card-overlay">
                                 <div class="badges">
                                     ${modalidadeBadge}
-                                    ${centroBadge}
+                                    ${centrosBadges}
                                 </div>
                             </div>
                         </div>
@@ -234,17 +246,16 @@ function exibirCursos(cursos) {
                                     <i class="fas fa-tag me-1"></i>${curso.area}
                                 </p>
                                 <p class="card-text small">${curso.descricao || 'Descrição não disponível'}</p>
+                                ${centrosBadges ? `<div class="mb-2">${centrosBadges}</div>` : ''}
                             </div>
                             <div class="mt-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <small class="text-muted">
                                         <i class="fas fa-clock me-1"></i>
-                                        ${curso.duracao_horas ? curso.duracao_horas + 'h' : 'A definir'}
+                                        ${duracao}
                                     </small>
-                                    <small class="text-muted">
-                                        <i class="fas fa-users me-1"></i>
-                                        ${curso.vagas || 'Vagas limitadas'}
-                                    </small>
+                                    ${preco ? `<small class="text-success fw-bold">${preco}Kz</small>` : 
+                                        '<small class="text-muted">Consultar preço</small>'}
                                 </div>
                                 <div class="d-grid">
                                     <a href="/pre-inscricao?curso_id=${curso.id}" class="btn btn-primary">
@@ -283,14 +294,15 @@ function getModalidadeBadge(modalidade) {
  */
 function getCursoImage(area) {
     const images = {
-        'Informática': 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        'Gestão': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        'Marketing': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        'Recursos Humanos': 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-        'Contabilidade': 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
+        'Gestão': '/images/banner-10.jpg',
+        'Contabilidade': '/images/banner-10.jpg',
+        'Informática': '/images/banner-10.jpg',
+        'Inglês': '/images/banner-10.jpg',
+        'Matemática': '/images/banner-10.jpg',
+        'Programação': '/images/banner-10.jpg'
     };
     
-    return images[area] || 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+    return images[area] || '/images/banner-10.jpg';
 }
 </script>
 

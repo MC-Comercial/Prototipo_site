@@ -143,10 +143,7 @@ class CentroController extends Controller
         }
 
         // Retorna o centro encontrado com relacionamentos
-        return response()->json([
-            'status' => 'sucesso',
-            'dados' => $centro
-        ]);
+        return response()->json($centro);
     }
 
     // Editar

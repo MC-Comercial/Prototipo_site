@@ -116,7 +116,7 @@ function carregarCategorias() {
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="visualizarCategoria(${categoria.id})" title="Visualizar">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <a href="{{ route('categorias.edit', '') }}/${categoria.id}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <a href="/categorias/${categoria.id}/edit" class="btn btn-sm btn-outline-warning" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarCategoria(${categoria.id})" title="Eliminar">

@@ -31,10 +31,13 @@
                 <div class="card-body">
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
-                        <strong>ID da Pré-Inscrição:</strong> <span id="preInscricaoId">{{ request()->route('id') }}</span>
+                        <strong>ID da Pré-Inscrição:</strong> <span id="preInscricaoId">{{ $preInscricao->id ?? 'N/A' }}</span>
                     </div>
 
-                    <form id="preInscricaoForm">
+                    <form id="preInscricaoForm" method="POST" action="{{ route('pre-inscricoes.update', $preInscricao->id) }}">
+                        @csrf
+                        @method('PUT')
+                        
                         <!-- Dados Pessoais -->
                         <div class="row">
                             <div class="col-12">
@@ -47,13 +50,13 @@
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label for="nome_completo" class="form-label">Nome Completo <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="nome_completo" name="nome_completo" required maxlength="100">
+                                <input type="text" class="form-control" id="nome_completo" name="nome_completo" required maxlength="100" value="{{ $preInscricao->nome_completo }}">
                                 <div class="form-text">Máximo 100 caracteres</div>
                             </div>
                             
                             <div class="col-md-4 mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" maxlength="100">
+                                <input type="email" class="form-control" id="email" name="email" maxlength="100" value="{{ $preInscricao->email }}">
                                 <div class="form-text">Opcional</div>
                             </div>
                         </div>
@@ -92,14 +95,28 @@
                             <div class="col-md-6 mb-3">
                                 <label for="curso_id" class="form-label">Curso <span class="text-danger">*</span></label>
                                 <select class="form-select" id="curso_id" name="curso_id" required>
-                                    <option value="">Carregando cursos...</option>
+                                    <option value="">Selecione o curso</option>
+                                    @foreach($cursos as $curso)
+                                        @if($curso->ativo)
+                                            <option value="{{ $curso->id }}" {{ $preInscricao->curso_id == $curso->id ? 'selected' : '' }}>
+                                                {{ $curso->nome }}
+                                            </option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label for="centro_id" class="form-label">Centro <span class="text-danger">*</span></label>
                                 <select class="form-select" id="centro_id" name="centro_id" required>
-                                    <option value="">Carregando centros...</option>
+                                    <option value="">Selecione o centro</option>
+                                    @foreach($centros as $centro)
+                                        @if($centro->ativo)
+                                            <option value="{{ $centro->id }}" {{ $preInscricao->centro_id == $centro->id ? 'selected' : '' }}>
+                                                {{ $centro->nome }}
+                                            </option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -108,16 +125,21 @@
                             <div class="col-md-6 mb-3">
                                 <label for="horario_id" class="form-label">Horário</label>
                                 <select class="form-select" id="horario_id" name="horario_id">
-                                    <option value="">Carregando horários...</option>
+                                    <option value="">Selecione o horário (opcional)</option>
+                                    @foreach($horarios as $horario)
+                                        <option value="{{ $horario->id }}" {{ $preInscricao->horario_id == $horario->id ? 'selected' : '' }}>
+                                            {{ $horario->descricao }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                                 <select class="form-select" id="status" name="status" required>
-                                    <option value="pendente">Pendente</option>
-                                    <option value="confirmado">Confirmado</option>
-                                    <option value="cancelado">Cancelado</option>
+                                    <option value="pendente" {{ $preInscricao->status == 'pendente' ? 'selected' : '' }}>Pendente</option>
+                                    <option value="confirmado" {{ $preInscricao->status == 'confirmado' ? 'selected' : '' }}>Confirmado</option>
+                                    <option value="cancelado" {{ $preInscricao->status == 'cancelado' ? 'selected' : '' }}>Cancelado</option>
                                 </select>
                             </div>
                         </div>
@@ -133,7 +155,7 @@
 
                         <div class="mb-3">
                             <label for="observacoes" class="form-label">Observações Administrativas</label>
-                            <textarea class="form-control" id="observacoes" name="observacoes" rows="4" maxlength="1000"></textarea>
+                            <textarea class="form-control" id="observacoes" name="observacoes" rows="4" maxlength="1000">{{ $preInscricao->observacoes }}</textarea>
                             <div class="form-text">Notas internas sobre a pré-inscrição (máximo 1000 caracteres)</div>
                         </div>
 
@@ -180,11 +202,15 @@
                     </h6>
                 </div>
                 <div class="card-body">
-                    <div id="infoCard">
-                        <div class="text-center">
-                            <i class="fas fa-spinner fa-spin"></i> Carregando...
-                        </div>
-                    </div>
+                    <p><strong>ID:</strong> {{ $preInscricao->id }}</p>
+                    <p><strong>Data de Criação:</strong><br><small>{{ $preInscricao->created_at->format('d/m/Y H:i') }}</small></p>
+                    <p><strong>Última Atualização:</strong><br><small>{{ $preInscricao->updated_at->format('d/m/Y H:i') }}</small></p>
+                    <hr>
+                    <h6 class="text-warning">Atenção:</h6>
+                    <ul class="small">
+                        <li>As alterações serão salvas imediatamente</li>
+                        <li>Certifique-se de que todos os dados estão corretos</li>
+                    </ul>
                 </div>
             </div>
 
@@ -205,162 +231,40 @@
 
 @section('scripts')
 <script>
-let preInscricaoData = null;
-const preInscricaoId = {{ request()->route('id') }};
+const preInscricaoId = {{ $preInscricao->id ?? 'null' }};
 
 $(document).ready(function() {
-    carregarPreInscricao();
-    carregarCursos();
-    carregarCentros();
-    carregarHorarios();
+    // Os dados já estão carregados no formulário via Blade
+    // Carregar contactos existentes
+    @php
+        $contactos = is_string($preInscricao->contactos) ? json_decode($preInscricao->contactos, true) : $preInscricao->contactos;
+        $contactos = $contactos ?: [];
+    @endphp
+    
+    const contactosExistentes = @json($contactos);
+    preencherContactos(contactosExistentes);
+    
+    // Apenas inicializar o preview
+    atualizarPreview();
 
     // Preview em tempo real
     $('#preInscricaoForm input, #preInscricaoForm select, #preInscricaoForm textarea').on('input change', function() {
         atualizarPreview();
     });
 
-    // Submit do formulário
-    $('#preInscricaoForm').on('submit', function(e) {
-        e.preventDefault();
-        atualizarPreInscricao();
-    });
-
-    // Atualizar horários quando centro mudar
-    $('#centro_id').on('change', function() {
-        carregarHorarios();
-    });
+    // Submit do formulário - usando submit normal (não AJAX)
 });
-
-function carregarPreInscricao() {
-    $.get(`/api/pre-inscricoes/${preInscricaoId}`, function(data) {
-        preInscricaoData = data;
-        preencherFormulario(data);
-        atualizarInfoCard(data);
-    }).fail(function() {
-        Swal.fire({
-            title: 'Erro!',
-            text: 'Não foi possível carregar os dados da pré-inscrição.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            window.location.href = '{{ route("pre-inscricoes.index") }}';
-        });
-    });
-}
-
-function preencherFormulario(data) {
-    $('#nome_completo').val(data.nome_completo);
-    $('#email').val(data.email || '');
-    $('#status').val(data.status);
-    $('#observacoes').val(data.observacoes || '');
-
-    // Preencher contactos
-    preencherContactos(data.contactos);
-
-    // Aguardar o carregamento dos selects para preencher
-    setTimeout(() => {
-        $('#curso_id').val(data.curso_id);
-        $('#centro_id').val(data.centro_id);
-        if (data.horario_id) {
-            $('#horario_id').val(data.horario_id);
-        }
-        atualizarPreview();
-    }, 1000);
-}
 
 function preencherContactos(contactos) {
     $('#contactosContainer').empty();
     
-    if (contactos) {
-        let contactosObj = {};
-        try {
-            contactosObj = typeof contactos === 'string' ? JSON.parse(contactos) : contactos;
-        } catch (e) {
-            console.error('Erro ao parsear contactos:', e);
-        }
-
-        if (Object.keys(contactosObj).length > 0) {
-            Object.keys(contactosObj).forEach(tipo => {
-                adicionarContacto(tipo, contactosObj[tipo]);
-            });
-        } else {
-            adicionarContacto();
-        }
+    if (contactos && Object.keys(contactos).length > 0) {
+        Object.keys(contactos).forEach(tipo => {
+            adicionarContacto(tipo, contactos[tipo]);
+        });
     } else {
         adicionarContacto();
     }
-}
-
-function atualizarInfoCard(data) {
-    const statusBadge = getStatusBadge(data.status);
-    const dataFormatada = new Date(data.created_at).toLocaleDateString('pt-PT');
-    const dataAtualizacao = new Date(data.updated_at).toLocaleDateString('pt-PT');
-
-    const info = `
-        <h6>${data.nome_completo}</h6>
-        <p class="mb-2"><strong>Status:</strong> ${statusBadge}</p>
-        <p class="mb-2"><strong>Email:</strong> ${data.email || '<span class="text-muted">N/A</span>'}</p>
-        <p class="mb-2"><strong>Curso:</strong> ${data.curso ? data.curso.nome : '<span class="text-muted">N/A</span>'}</p>
-        <p class="mb-2"><strong>Centro:</strong> ${data.centro ? data.centro.nome : '<span class="text-muted">N/A</span>'}</p>
-        <hr>
-        <p class="small mb-1"><strong>Criado em:</strong> ${dataFormatada}</p>
-        <p class="small mb-0"><strong>Atualizado em:</strong> ${dataAtualizacao}</p>
-    `;
-
-    $('#infoCard').html(info);
-}
-
-function carregarCursos() {
-    $.get('/api/cursos', function(data) {
-        let options = '<option value="">Selecione o curso</option>';
-        data.forEach(function(curso) {
-            if (curso.ativo) {
-                options += `<option value="${curso.id}">${curso.nome}</option>`;
-            }
-        });
-        $('#curso_id').html(options);
-        
-        if (preInscricaoData && preInscricaoData.curso_id) {
-            $('#curso_id').val(preInscricaoData.curso_id);
-        }
-    });
-}
-
-function carregarCentros() {
-    $.get('/api/centros', function(data) {
-        let options = '<option value="">Selecione o centro</option>';
-        data.forEach(function(centro) {
-            if (centro.ativo) {
-                options += `<option value="${centro.id}">${centro.nome}</option>`;
-            }
-        });
-        $('#centro_id').html(options);
-        
-        if (preInscricaoData && preInscricaoData.centro_id) {
-            $('#centro_id').val(preInscricaoData.centro_id);
-        }
-    });
-}
-
-function carregarHorarios() {
-    const centroId = $('#centro_id').val();
-    let url = '/api/horarios';
-    
-    if (centroId) {
-        url += `?centro_id=${centroId}`;
-    }
-
-    $.get(url, function(data) {
-        let options = '<option value="">Selecione o horário (opcional)</option>';
-        data.forEach(function(horario) {
-            options += `<option value="${horario.id}">${horario.descricao}</option>`;
-        });
-        $('#horario_id').html(options);
-        
-        if (preInscricaoData && preInscricaoData.horario_id) {
-            $('#horario_id').val(preInscricaoData.horario_id);
-        }
-    });
 }
 
 function adicionarContacto(tipo = 'telefone', valor = '') {
@@ -477,69 +381,6 @@ function alterarStatusRapido(novoStatus) {
         icon: 'info',
         timer: 2000,
         showConfirmButton: false
-    });
-}
-
-function atualizarPreInscricao() {
-    // Coletar contactos
-    const contactos = {};
-    $('.contacto-item').each(function() {
-        const tipo = $(this).find('.contacto-tipo').val();
-        const valor = $(this).find('.contacto-valor').val();
-        if (valor) {
-            contactos[tipo] = valor;
-        }
-    });
-
-    const formData = {
-        nome_completo: $('#nome_completo').val(),
-        email: $('#email').val() || null,
-        curso_id: parseInt($('#curso_id').val()),
-        centro_id: parseInt($('#centro_id').val()),
-        horario_id: $('#horario_id').val() ? parseInt($('#horario_id').val()) : null,
-        status: $('#status').val(),
-        contactos: Object.keys(contactos).length > 0 ? contactos : null,
-        observacoes: $('#observacoes').val() || null
-    };
-
-    $.ajax({
-        url: `/api/pre-inscricoes/${preInscricaoId}`,
-        method: 'PUT',
-        data: JSON.stringify(formData),
-        contentType: 'application/json',
-        beforeSend: function() {
-            $('#preInscricaoForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Atualizando...');
-        },
-        success: function(response) {
-            Swal.fire({
-                title: 'Sucesso!',
-                text: 'Pré-inscrição atualizada com sucesso!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '{{ route("pre-inscricoes.index") }}';
-            });
-        },
-        error: function(xhr) {
-            let message = 'Ocorreu um erro ao atualizar a pré-inscrição.';
-            
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                message = xhr.responseJSON.message;
-            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                const errors = Object.values(xhr.responseJSON.errors).flat();
-                message = errors.join('<br>');
-            }
-
-            Swal.fire({
-                title: 'Erro!',
-                html: message,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        },
-        complete: function() {
-            $('#preInscricaoForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Atualizar Pré-Inscrição');
-        }
     });
 }
 </script>

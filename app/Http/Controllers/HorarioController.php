@@ -15,43 +15,54 @@ class HorarioController extends Controller
 
     public function create()
     {
-        return view('horarios.create');
+        $cursos = \App\Models\Curso::all();
+        $centros = \App\Models\Centro::all();
+        return view('horarios.create', compact('cursos', 'centros'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nome' => 'required|string|max:100',
+            'curso_id' => 'required|exists:cursos,id',
+            'centro_id' => 'required|exists:centros,id',
+            'dia_semana' => 'required|string|max:50',
+            'periodo' => 'required|string|max:50',
+            'hora_inicio' => 'nullable|date_format:H:i',
+            'hora_fim' => 'nullable|date_format:H:i'
         ]);
         $horario = Horario::create($validated);
         return redirect()->route('horarios.index')->with('success', 'Horário criado com sucesso!');
     }
 
-    public function show($id)
+    public function show(Horario $horario)
     {
-        $horario = Horario::with(['curso', 'centro'])->findOrFail($id);
+        $horario->load(['curso', 'centro']);
         return view('horarios.show', compact('horario'));
     }
 
-    public function edit($id)
+    public function edit(Horario $horario)
     {
-        $horario = Horario::findOrFail($id);
-        return view('horarios.edit', compact('horario'));
+        $cursos = \App\Models\Curso::all();
+        $centros = \App\Models\Centro::all();
+        return view('horarios.edit', compact('horario', 'cursos', 'centros'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Horario $horario)
     {
-        $horario = Horario::findOrFail($id);
         $validated = $request->validate([
-            'nome' => 'required|string|max:100',
+            'curso_id' => 'required|exists:cursos,id',
+            'centro_id' => 'required|exists:centros,id',
+            'dia_semana' => 'required|string|max:50',
+            'periodo' => 'required|string|max:50',
+            'hora_inicio' => 'nullable|date_format:H:i',
+            'hora_fim' => 'nullable|date_format:H:i'
         ]);
         $horario->update($validated);
         return redirect()->route('horarios.index')->with('success', 'Horário atualizado com sucesso!');
     }
 
-    public function destroy($id)
+    public function destroy(Horario $horario)
     {
-        $horario = Horario::findOrFail($id);
         $horario->delete();
         return redirect()->route('horarios.index')->with('success', 'Horário deletado com sucesso!');
     }

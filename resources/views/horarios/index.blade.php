@@ -123,7 +123,7 @@ function carregarHorarios() {
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="visualizarHorario(${horario.id})" title="Visualizar">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <a href="{{ route('horarios.edit', '') }}/${horario.id}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <a href="/horarios/${horario.id}/edit" class="btn btn-sm btn-outline-warning" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarHorario(${horario.id})" title="Eliminar">

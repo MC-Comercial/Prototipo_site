@@ -22,36 +22,47 @@ class CategoriaController extends Controller
     {
         $validated = $request->validate([
             'nome' => 'required|string|max:100|unique:categorias,nome',
+            'descricao' => 'nullable|string',
+            'tipo' => 'required|in:loja,snack',
+            'ativo' => 'boolean'
         ]);
+        
+        // Garantir que ativo seja boolean
+        $validated['ativo'] = $request->has('ativo') ? true : false;
+        
         $categoria = Categoria::create($validated);
         return redirect()->route('categorias.index')->with('success', 'Categoria criada com sucesso!');
     }
 
-    public function show($id)
+    public function show(Categoria $categoria)
     {
-        $categoria = Categoria::with(['produtos'])->findOrFail($id);
+        $categoria->load(['produtos']);
         return view('categorias.show', compact('categoria'));
     }
 
-    public function edit($id)
+    public function edit(Categoria $categoria)
     {
-        $categoria = Categoria::findOrFail($id);
         return view('categorias.edit', compact('categoria'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Categoria $categoria)
     {
-        $categoria = Categoria::findOrFail($id);
         $validated = $request->validate([
             'nome' => 'required|string|max:100|unique:categorias,nome,' . $categoria->id,
+            'descricao' => 'nullable|string',
+            'tipo' => 'required|in:loja,snack',
+            'ativo' => 'boolean'
         ]);
+        
+        // Garantir que ativo seja boolean
+        $validated['ativo'] = $request->has('ativo') ? true : false;
+        
         $categoria->update($validated);
         return redirect()->route('categorias.index')->with('success', 'Categoria atualizada com sucesso!');
     }
 
-    public function destroy($id)
+    public function destroy(Categoria $categoria)
     {
-        $categoria = Categoria::findOrFail($id);
         $categoria->delete();
         return redirect()->route('categorias.index')->with('success', 'Categoria deletada com sucesso!');
     }

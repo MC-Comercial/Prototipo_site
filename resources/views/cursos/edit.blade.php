@@ -29,24 +29,20 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div id="loadingContent" class="text-center py-5">
-                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
-                        <p>Carregando dados do curso...</p>
-                    </div>
-
-                    <form id="cursoForm" style="display: none;">
-                        <input type="hidden" id="curso_id" name="id">
+                    <form id="cursoForm" action="{{ route('cursos.update', $curso->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
                         
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label for="nome" class="form-label">Nome do Curso <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="nome" name="nome" required maxlength="100">
+                                <input type="text" class="form-control" id="nome" name="nome" value="{{ $curso->nome }}" required maxlength="100">
                                 <div class="form-text">Máximo 100 caracteres</div>
                             </div>
                             
                             <div class="col-md-4 mb-3">
                                 <label for="area" class="form-label">Área <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="area" name="area" required maxlength="100">
+                                <input type="text" class="form-control" id="area" name="area" value="{{ $curso->area }}" required maxlength="100">
                                 <div class="form-text">Ex: Informática, Gestão, etc.</div>
                             </div>
                         </div>
@@ -56,35 +52,36 @@
                                 <label for="modalidade" class="form-label">Modalidade <span class="text-danger">*</span></label>
                                 <select class="form-select" id="modalidade" name="modalidade" required>
                                     <option value="">Selecione a modalidade</option>
-                                    <option value="presencial">Presencial</option>
-                                    <option value="online">Online</option>
+                                    <option value="presencial" {{ $curso->modalidade === 'presencial' ? 'selected' : '' }}>Presencial</option>
+                                    <option value="online" {{ $curso->modalidade === 'online' ? 'selected' : '' }}>Online</option>
+                                    <option value="hibrido" {{ $curso->modalidade === 'hibrido' ? 'selected' : '' }}>Híbrido</option>
                                 </select>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label for="ativo" class="form-label">Status</label>
                                 <select class="form-select" id="ativo" name="ativo">
-                                    <option value="1">Ativo</option>
-                                    <option value="0">Inativo</option>
+                                    <option value="1" {{ $curso->ativo ? 'selected' : '' }}>Ativo</option>
+                                    <option value="0" {{ !$curso->ativo ? 'selected' : '' }}>Inativo</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="imagem_url" class="form-label">URL da Imagem</label>
-                            <input type="url" class="form-control" id="imagem_url" name="imagem_url" maxlength="255">
+                            <input type="url" class="form-control" id="imagem_url" name="imagem_url" value="{{ $curso->imagem_url }}" maxlength="255">
                             <div class="form-text">URL opcional para a imagem do curso</div>
                         </div>
 
                         <div class="mb-3">
                             <label for="descricao" class="form-label">Descrição</label>
-                            <textarea class="form-control" id="descricao" name="descricao" rows="4" maxlength="1000"></textarea>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="4" maxlength="1000">{{ $curso->descricao }}</textarea>
                             <div class="form-text">Descrição detalhada do curso (máximo 1000 caracteres)</div>
                         </div>
 
                         <div class="mb-3">
                             <label for="programa" class="form-label">Programa do Curso</label>
-                            <textarea class="form-control" id="programa" name="programa" rows="8" maxlength="5000"></textarea>
+                            <textarea class="form-control" id="programa" name="programa" rows="8" maxlength="5000">{{ $curso->programa }}</textarea>
                             <div class="form-text">Programa detalhado, módulos, objetivos, etc. (máximo 5000 caracteres)</div>
                         </div>
 
@@ -109,10 +106,18 @@
                     </h6>
                 </div>
                 <div class="card-body" id="infoCard">
-                    <div class="text-center py-3">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p class="mb-0 mt-2">Carregando...</p>
-                    </div>
+                    <p><strong>ID:</strong> {{ $curso->id }}</p>
+                    <p><strong>Data de Criação:</strong><br><small>{{ $curso->created_at->format('d/m/Y H:i') }}</small></p>
+                    <p><strong>Última Atualização:</strong><br><small>{{ $curso->updated_at->format('d/m/Y H:i') }}</small></p>
+                    
+                    <hr>
+                    
+                    <h6 class="text-warning">Atenção:</h6>
+                    <ul class="small">
+                        <li>As alterações serão salvas imediatamente</li>
+                        <li>Certifique-se de que todos os dados estão corretos</li>
+                        <li>Cursos inativos não aparecerão nas listagens públicas</li>
+                    </ul>
                 </div>
             </div>
 
@@ -143,84 +148,21 @@ $(document).ready(function() {
         }
     });
     
-    const cursoId = {{ request()->route('id') ?? 'null' }};
+    const cursoId = {{ $curso->id ?? 'null' }};
     
-    if (cursoId) {
-        carregarCurso(cursoId);
-    } else {
-        Swal.fire('Erro!', 'ID do curso não fornecido.', 'error').then(() => {
-            window.location.href = '{{ route("cursos.index") }}';
-        });
-    }
+    // Os dados já estão carregados no formulário via Blade
+    // Apenas inicializar o preview
+    atualizarPreview();
 
     // Preview em tempo real
     $('#cursoForm input, #cursoForm select, #cursoForm textarea').on('input change', function() {
         atualizarPreview();
     });
 
-    // Submit do formulário
-    $('#cursoForm').on('submit', function(e) {
-        e.preventDefault();
-        atualizarCurso();
-    });
+    // Submit do formulário - usando submit normal (não AJAX)
 });
 
-function carregarCurso(id) {
-    $.get(`/api/cursos/${id}`)
-        .done(function(curso) {
-            // Preencher formulário
-            $('#curso_id').val(curso.id);
-            $('#nome').val(curso.nome);
-            $('#area').val(curso.area);
-            $('#modalidade').val(curso.modalidade);
-            $('#ativo').val(curso.ativo ? 1 : 0);
-            $('#imagem_url').val(curso.imagem_url || '');
-            $('#descricao').val(curso.descricao || '');
-            $('#programa').val(curso.programa || '');
-
-            // Mostrar informações
-            mostrarInformacoesCurso(curso);
-
-            // Mostrar formulário
-            $('#loadingContent').hide();
-            $('#cursoForm').show();
-
-            // Atualizar preview inicial
-            atualizarPreview();
-        })
-        .fail(function(xhr) {
-            if (xhr.status === 401) {
-                window.location.href = '/login';
-                return;
-            }
-            
-            Swal.fire('Erro!', 'Curso não encontrado.', 'error').then(() => {
-                window.location.href = '{{ route("cursos.index") }}';
-            });
-        });
-}
-
-function mostrarInformacoesCurso(curso) {
-    const dataFormatada = new Date(curso.created_at).toLocaleDateString('pt-PT');
-    const dataAtualizacao = new Date(curso.updated_at).toLocaleDateString('pt-PT');
-
-    const infoHtml = `
-        <p><strong>ID:</strong> ${curso.id}</p>
-        <p><strong>Data de Criação:</strong><br><small>${dataFormatada}</small></p>
-        <p><strong>Última Atualização:</strong><br><small>${dataAtualizacao}</small></p>
-        
-        <hr>
-        
-        <h6 class="text-warning">Atenção:</h6>
-        <ul class="small">
-            <li>As alterações serão salvas imediatamente</li>
-            <li>Certifique-se de que todos os dados estão corretos</li>
-            <li>Cursos inativos não aparecerão nas listagens públicas</li>
-        </ul>
-    `;
-
-    $('#infoCard').html(infoHtml);
-}
+// Funções AJAX removidas - usando formulário normal
 
 function atualizarPreview() {
     const nome = $('#nome').val();
@@ -262,64 +204,6 @@ function atualizarPreview() {
     }
 }
 
-function atualizarCurso() {
-    const cursoId = $('#curso_id').val();
-    const formData = {
-        nome: $('#nome').val(),
-        area: $('#area').val(),
-        modalidade: $('#modalidade').val(),
-        ativo: parseInt($('#ativo').val()),
-        imagem_url: $('#imagem_url').val() || null,
-        descricao: $('#descricao').val() || null,
-        programa: $('#programa').val() || null
-    };
-
-    $.ajax({
-        url: `/api/cursos/${cursoId}`,
-        method: 'PUT',
-        data: JSON.stringify(formData),
-        contentType: 'application/json',
-        beforeSend: function() {
-            $('#cursoForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Atualizando...');
-        },
-        success: function(response) {
-            Swal.fire({
-                title: 'Sucesso!',
-                text: 'Curso atualizado com sucesso!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '{{ route("cursos.index") }}';
-            });
-        },
-        error: function(xhr) {
-            console.error('Erro ao atualizar curso:', xhr);
-            
-            if (xhr.status === 401) {
-                window.location.href = '/login';
-                return;
-            }
-            
-            let message = 'Ocorreu um erro ao atualizar o curso.';
-            
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                message = xhr.responseJSON.message;
-            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                const errors = Object.values(xhr.responseJSON.errors).flat();
-                message = errors.join('<br>');
-            }
-
-            Swal.fire({
-                title: 'Erro!',
-                html: message,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        },
-        complete: function() {
-            $('#cursoForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Atualizar Curso');
-        }
-    });
-}
+// Função atualizarCurso removida - usando formulário normal
 </script>
 @endsection

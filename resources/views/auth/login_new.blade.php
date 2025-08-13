@@ -77,8 +77,10 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <i class="fas fa-graduation-cap fa-3x mb-3"></i>
-                <h1>MC-COMERCIAL</h1>
+                <div class="text-center mb-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="MC-COMERCIAL" style="height: 60px; max-height: 60px; width: auto; display: block; margin: 0 auto;">
+                    <h1 style="margin-top: 0.5rem; margin-bottom: 0;">MC-COMERCIAL</h1>
+                </div>
                 <p>Sistema de Gestão</p>
             </div>
             

@@ -29,24 +29,33 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="text-center mb-3">
-                        <i class="fas fa-spinner fa-spin fa-2x text-muted"></i>
-                        <p class="mt-2 text-muted">Carregando dados do formador...</p>
-                    </div>
+                    {{-- Exibir erros de validação --}}
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Erro na validação:</h6>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                    <form id="formadorForm" style="display: none;">
-                        <input type="hidden" id="formadorId" name="id">
+                    <form id="formadorForm" method="POST" action="{{ route('formadores.update', $formador->id) }}">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" id="formadorId" name="id" value="{{ $formador->id }}">
                         
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label for="nome" class="form-label">Nome Completo <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="nome" name="nome" required maxlength="255">
+                                <input type="text" class="form-control" id="nome" name="nome" required maxlength="255" value="{{ $formador->nome }}">
                                 <div class="form-text">Nome completo do formador</div>
                             </div>
                             
                             <div class="col-md-4 mb-3">
                                 <label for="especialidade" class="form-label">Especialidade</label>
-                                <input type="text" class="form-control" id="especialidade" name="especialidade" maxlength="255">
+                                <input type="text" class="form-control" id="especialidade" name="especialidade" maxlength="255" value="{{ $formador->especialidade }}">
                                 <div class="form-text">Área de especialização</div>
                             </div>
                         </div>
@@ -54,20 +63,20 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" maxlength="255">
+                                <input type="email" class="form-control" id="email" name="email" maxlength="255" value="{{ $formador->email }}">
                                 <div class="form-text">Email profissional (opcional)</div>
                             </div>
                             
                             <div class="col-md-6 mb-3">
                                 <label for="foto_url" class="form-label">URL da Foto</label>
-                                <input type="url" class="form-control" id="foto_url" name="foto_url" maxlength="255">
+                                <input type="url" class="form-control" id="foto_url" name="foto_url" maxlength="255" value="{{ $formador->foto_url }}">
                                 <div class="form-text">URL da foto do formador</div>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="bio" class="form-label">Biografia</label>
-                            <textarea class="form-control" id="bio" name="bio" rows="6" maxlength="2000"></textarea>
+                            <textarea class="form-control" id="bio" name="bio" rows="6" maxlength="2000">{{ $formador->bio }}</textarea>
                             <div class="form-text">Biografia profissional, experiência, formação (máximo 2000 caracteres)</div>
                         </div>
 
@@ -115,6 +124,25 @@
                 </div>
             </div>
 
+            <div class="card mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Informações
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>ID:</strong> {{ $formador->id }}</p>
+                    <p><strong>Data de Criação:</strong><br><small>{{ $formador->created_at->format('d/m/Y H:i') }}</small></p>
+                    <p><strong>Última Atualização:</strong><br><small>{{ $formador->updated_at->format('d/m/Y H:i') }}</small></p>
+                    <hr>
+                    <h6 class="text-warning">Atenção:</h6>
+                    <ul class="small">
+                        <li>As alterações serão salvas imediatamente</li>
+                        <li>Certifique-se de que todos os dados estão corretos</li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="card mt-3" id="previewCard" style="display: none;">
                 <div class="card-header bg-success text-white">
                     <h6 class="mb-0">
@@ -132,21 +160,32 @@
 
 @section('scripts')
 <script>
-$(document).ready(function() {
-    // Configurar headers AJAX globalmente
-    $.ajaxSetup({
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    
-    let contactoIndex = 0;
-    const formadorId = {{ request()->route('id') }};
+let contactoIndex = 0;
+const formadorId = {{ $formador->id ?? 'null' }};
 
-    // Carregar dados do formador
-    carregarFormador(formadorId);
+$(document).ready(function() {
+    // Os dados já estão carregados no formulário via Blade
+    // Carregar contactos existentes
+    @php
+        $contactos = [];
+        if ($formador->contactos) {
+            if (is_string($formador->contactos)) {
+                $decoded = json_decode($formador->contactos, true);
+                if (is_array($decoded)) {
+                    $contactos = $decoded;
+                }
+            } elseif (is_array($formador->contactos)) {
+                $contactos = $formador->contactos;
+            }
+        }
+    @endphp
+    
+    const contactosExistentes = @json($contactos);
+    console.log('Contactos existentes:', contactosExistentes);
+    carregarContactos(contactosExistentes);
+    
+    // Apenas inicializar o preview
+    atualizarPreview();
 
     // Preview em tempo real
     $(document).on('input change', '#formadorForm input, #formadorForm select, #formadorForm textarea', function() {
@@ -171,57 +210,26 @@ $(document).ready(function() {
         atualizarPreview();
     });
 
-    // Submit do formulário
-    $('#formadorForm').on('submit', function(e) {
-        e.preventDefault();
-        atualizarFormador();
-    });
+    // Submit do formulário - usando submit normal (não AJAX)
 });
-
-function carregarFormador(id) {
-    $.get(`/api/formadores/${id}`)
-        .done(function(formador) {
-            $('#formadorId').val(formador.id);
-            $('#nome').val(formador.nome);
-            $('#email').val(formador.email || '');
-            $('#especialidade').val(formador.especialidade || '');
-            $('#bio').val(formador.bio || '');
-            $('#foto_url').val(formador.foto_url || '');
-
-            // Carregar contactos
-            carregarContactos(formador.contactos || []);
-
-            $('#formadorForm').show();
-            $('.card-body .text-center').hide();
-            
-            atualizarPreview();
-        })
-        .fail(function(xhr) {
-            if (xhr.status === 401) {
-                window.location.href = '/login';
-                return;
-            }
-            
-            Swal.fire({
-                title: 'Erro!',
-                text: 'Não foi possível carregar os dados do formador.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '{{ route("formadores.index") }}';
-            });
-        });
-}
 
 function carregarContactos(contactos) {
     $('#contactosContainer').empty();
     contactoIndex = 0;
 
-    if (contactos.length === 0) {
+    if (!contactos || !Array.isArray(contactos) || contactos.length === 0) {
+        // Se não há contactos ou não é um array, adiciona um contacto vazio
         adicionarContacto();
     } else {
+        // Carrega os contactos existentes
         contactos.forEach(function(contacto) {
-            adicionarContacto(contacto.tipo, contacto.valor);
+            if (typeof contacto === 'object' && contacto.tipo && contacto.valor) {
+                // Formato novo: {tipo: 'Telefone', valor: '123456789'}
+                adicionarContacto(contacto.tipo, contacto.valor);
+            } else if (typeof contacto === 'string') {
+                // Formato antigo: string simples
+                adicionarContacto('Telefone', contacto);
+            }
         });
     }
     
@@ -323,76 +331,6 @@ function atualizarPreview() {
     } else {
         $('#previewCard').hide();
     }
-}
-
-function atualizarFormador() {
-    // Coletar contactos
-    const contactos = [];
-    $('.contacto-item').each(function() {
-        const tipo = $(this).find('.contacto-tipo').val();
-        const valor = $(this).find('.contacto-valor').val();
-        if (tipo && valor) {
-            contactos.push({ tipo, valor });
-        }
-    });
-
-    const formData = {
-        nome: $('#nome').val(),
-        email: $('#email').val() || null,
-        especialidade: $('#especialidade').val() || null,
-        bio: $('#bio').val() || null,
-        foto_url: $('#foto_url').val() || null,
-        contactos: contactos.length > 0 ? contactos : null
-    };
-
-    const formadorId = $('#formadorId').val();
-
-    $.ajax({
-        url: `/api/formadores/${formadorId}`,
-        method: 'PUT',
-        data: JSON.stringify(formData),
-        contentType: 'application/json',
-        beforeSend: function() {
-            $('#formadorForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Atualizando...');
-        },
-        success: function(response) {
-            Swal.fire({
-                title: 'Sucesso!',
-                text: 'Formador atualizado com sucesso!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '{{ route("formadores.index") }}';
-            });
-        },
-        error: function(xhr) {
-            console.error('Erro ao atualizar formador:', xhr);
-            
-            if (xhr.status === 401) {
-                window.location.href = '/login';
-                return;
-            }
-            
-            let message = 'Ocorreu um erro ao atualizar o formador.';
-            
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                message = xhr.responseJSON.message;
-            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                const errors = Object.values(xhr.responseJSON.errors).flat();
-                message = errors.join('<br>');
-            }
-
-            Swal.fire({
-                title: 'Erro!',
-                html: message,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        },
-        complete: function() {
-            $('#formadorForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Atualizar Formador');
-        }
-    });
 }
 </script>
 @endsection

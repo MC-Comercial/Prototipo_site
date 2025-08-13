@@ -131,7 +131,7 @@ function carregarFormadores() {
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="visualizarFormador(${formador.id})" title="Visualizar">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <a href="{{ route('formadores.edit', '') }}/${formador.id}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <a href="/formadores/${formador.id}/edit" class="btn btn-sm btn-outline-warning" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarFormador(${formador.id})" title="Eliminar">
@@ -184,7 +184,10 @@ function visualizarFormador(id) {
     $.ajax({
         url: `/api/formadores/${id}`,
         method: 'GET',
-        success: function(formador) {
+        success: function(response) {
+        // A API retorna {status: 'sucesso', dados: formador}
+        const formador = response.dados || response;
+        
         const foto = formador.foto_url 
             ? `<img src="${formador.foto_url}" alt="Foto do formador" class="img-fluid rounded-circle" style="max-width: 150px; max-height: 150px; object-fit: cover;">` 
             : '<div class="text-center"><i class="fas fa-user-circle fa-5x text-muted"></i><br><span class="text-muted">Sem foto</span></div>';
@@ -194,17 +197,46 @@ function visualizarFormador(id) {
             : '<span class="text-muted">Não informado</span>';
         
         let contactosHtml = '<span class="text-muted">Nenhum contacto registado</span>';
-        if (formador.contactos && Array.isArray(formador.contactos) && formador.contactos.length > 0) {
-            contactosHtml = '<ul class="list-unstyled mb-0">';
-            formador.contactos.forEach(function(contacto) {
-                let icon = 'fas fa-phone';
-                if (contacto.tipo.toLowerCase().includes('email')) icon = 'fas fa-envelope';
-                else if (contacto.tipo.toLowerCase().includes('whatsapp')) icon = 'fab fa-whatsapp';
-                else if (contacto.tipo.toLowerCase().includes('linkedin')) icon = 'fab fa-linkedin';
+        
+        // Verificar se existem contactos e processá-los
+        if (formador.contactos) {
+            try {
+                let contactos = formador.contactos;
                 
-                contactosHtml += `<li><i class="${icon} me-2"></i><strong>${contacto.tipo}:</strong> ${contacto.valor}</li>`;
-            });
-            contactosHtml += '</ul>';
+                // Se for string, fazer parse
+                if (typeof contactos === 'string') {
+                    contactos = JSON.parse(contactos);
+                }
+                
+                // Se for array de objetos (formato novo)
+                if (Array.isArray(contactos) && contactos.length > 0) {
+                    contactosHtml = '<ul class="list-unstyled mb-0">';
+                    contactos.forEach(function(contacto) {
+                        let icon = 'fas fa-phone';
+                        if (contacto.tipo && contacto.tipo.toLowerCase().includes('email')) icon = 'fas fa-envelope';
+                        else if (contacto.tipo && contacto.tipo.toLowerCase().includes('whatsapp')) icon = 'fab fa-whatsapp';
+                        else if (contacto.tipo && contacto.tipo.toLowerCase().includes('linkedin')) icon = 'fab fa-linkedin';
+                        
+                        contactosHtml += `<li><i class="${icon} me-2"></i><strong>${contacto.tipo || 'Contacto'}:</strong> ${contacto.valor || contacto}</li>`;
+                    });
+                    contactosHtml += '</ul>';
+                }
+                // Se for objeto (formato antigo)
+                else if (typeof contactos === 'object' && Object.keys(contactos).length > 0) {
+                    contactosHtml = '<ul class="list-unstyled mb-0">';
+                    Object.entries(contactos).forEach(function([tipo, valor]) {
+                        let icon = 'fas fa-phone';
+                        if (tipo.toLowerCase().includes('email')) icon = 'fas fa-envelope';
+                        else if (tipo.toLowerCase().includes('whatsapp')) icon = 'fab fa-whatsapp';
+                        else if (tipo.toLowerCase().includes('linkedin')) icon = 'fab fa-linkedin';
+                        
+                        contactosHtml += `<li><i class="${icon} me-2"></i><strong>${tipo}:</strong> ${valor}</li>`;
+                    });
+                    contactosHtml += '</ul>';
+                }
+            } catch (e) {
+                console.log('Erro ao processar contactos:', e);
+            }
         }
         
         let html = `
@@ -213,10 +245,10 @@ function visualizarFormador(id) {
                     ${foto}
                 </div>
                 <div class="col-md-9">
-                    <h4>${formador.nome}</h4>
+                    <h4>${formador.nome || 'Nome não informado'}</h4>
                     <p class="mb-2"><strong>Email:</strong> ${email}</p>
                     <p class="mb-2"><strong>Especialidade:</strong> ${formador.especialidade || 'Não informada'}</p>
-                    <p class="mb-2"><strong>Data de Criação:</strong> ${new Date(formador.created_at).toLocaleDateString('pt-PT')}</p>
+                    <p class="mb-2"><strong>Data de Criação:</strong> ${formador.created_at ? new Date(formador.created_at).toLocaleDateString('pt-PT') : 'Data não disponível'}</p>
                 </div>
             </div>
             

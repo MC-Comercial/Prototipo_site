@@ -259,15 +259,34 @@ function exibirCentro(centro) {
     
     // Info lateral
     let contactosHtml = '';
-    try {
-        if (centro.contactos) {
-            const contactos = JSON.parse(centro.contactos);
-            contactosHtml = contactos.map(c => 
-                `<p class="mb-1"><strong>${c.tipo}:</strong> ${c.valor}</p>`
-            ).join('');
+    
+    if (centro.contactos) {
+        try {
+            // Laravel já converte para array automaticamente devido ao cast
+            if (Array.isArray(centro.contactos)) {
+                contactosHtml = centro.contactos.map((c, index) => {
+                    // Se c é objeto com tipo e valor
+                    if (typeof c === 'object' && c.tipo && c.valor) {
+                        return `<p class="mb-1"><strong>${c.tipo}:</strong> ${c.valor}</p>`;
+                    }
+                    // Se c é apenas string (formato atual)
+                    else if (typeof c === 'string') {
+                        return `<p class="mb-1"><strong>Telefone ${index + 1}:</strong> ${c}</p>`;
+                    }
+                    return '';
+                }).filter(item => item !== '').join('');
+            }
+            // Se não é array, tentar tratar como string
+            else if (typeof centro.contactos === 'string') {
+                contactosHtml = `<p class="mb-1"><strong>Contacto:</strong> ${centro.contactos}</p>`;
+            }
+        } catch (e) {
+            console.error('Erro ao processar contactos:', e);
+            console.log('Contactos originais:', centro.contactos);
+            
+            // Fallback mais seguro
+            contactosHtml = `<p class="mb-1"><strong>Contacto:</strong> ${JSON.stringify(centro.contactos)}</p>`;
         }
-    } catch (e) {
-        console.log('Erro ao processar contactos:', e);
     }
     
     const infoHtml = `
@@ -299,7 +318,7 @@ function exibirCentro(centro) {
 }
 
 function carregarCursos(centroId) {
-    $.get(`/api/cursos?centros=${centroId}&ativo=1`, function(cursos) {
+    $.get(`/api/cursos?centro_id=${centroId}&ativo=1`, function(cursos) {
         // Os cursos já vêm filtrados pelo centro e apenas ativos
         cursosDisponiveis = cursos;
         
@@ -528,24 +547,43 @@ function submeterPreInscricao() {
         observacoes: $('textarea[name="observacoes"]').val()?.trim() || null
     };
 
+    console.log('Dados a enviar:', dados);
+
     $.ajax({
         url: '/api/pre-inscricoes',
         method: 'POST',
         data: JSON.stringify(dados),
         contentType: 'application/json',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
         success: function(response) {
             $('#preInscricaoModal').modal('hide');
-            $('#referenciaInscricao').text(`#${response.id}`);
+            // A resposta pode ter o ID diretamente ou dentro de 'dados'
+            const inscricaoId = response.dados?.id || response.id || 'N/A';
+            $('#referenciaInscricao').text(`#${inscricaoId}`);
             $('#sucessoModal').modal('show');
         },
         error: function(xhr) {
             console.error('Erro na pré-inscrição:', xhr);
+            console.error('Response:', xhr.responseJSON);
+            console.error('Status:', xhr.status);
+            console.error('Status Text:', xhr.statusText);
+            
             let mensagem = 'Erro ao enviar pré-inscrição. Tente novamente.';
             
             if (xhr.responseJSON && xhr.responseJSON.mensagem) {
                 mensagem = xhr.responseJSON.mensagem;
+            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                mensagem = xhr.responseJSON.message;
             } else if (xhr.status === 422) {
                 mensagem = 'Dados inválidos. Verifique os campos preenchidos.';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = Object.values(xhr.responseJSON.errors).flat();
+                    mensagem += '\n\nDetalhes:\n' + errors.join('\n');
+                }
+            } else if (xhr.status === 404) {
+                mensagem = 'Dados do curso ou centro não encontrados.';
             } else if (xhr.status === 500) {
                 mensagem = 'Erro interno do servidor. Tente novamente mais tarde.';
             }

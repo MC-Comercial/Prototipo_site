@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste da API</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+</head>
+<body>
+    <h1>Teste da API de Cursos</h1>
+    
+    <div>
+        <h2>Cursos:</h2>
+        <button onclick="testarCursos()">Carregar Cursos</button>
+        <button onclick="testarCursosPorCentro()">Carregar Cursos do Centro 1</button>
+        <div id="resultado-cursos"></div>
+    </div>
+
+    <div>
+        <h2>Centros:</h2>
+        <button onclick="testarCentros()">Carregar Centros</button>
+        <div id="resultado-centros"></div>
+    </div>
+
+    <div>
+        <h2>Teste de Pré-inscrição:</h2>
+        <button onclick="testarPreInscricao()">Teste Pré-inscrição</button>
+        <div id="resultado-pre-inscricao"></div>
+    </div>
+
+    <script>
+        function testarCursos() {
+            $('#resultado-cursos').html('Carregando...');
+            
+            $.get('/api/cursos')
+                .done(function(data) {
+                    console.log('Cursos:', data);
+                    let html = '<h3>Total: ' + data.length + ' cursos</h3>';
+                    data.forEach(function(curso) {
+                        html += '<div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">';
+                        html += '<strong>' + curso.nome + '</strong><br>';
+                        html += 'Área: ' + curso.area + '<br>';
+                        html += 'Modalidade: ' + curso.modalidade + '<br>';
+                        
+                        if (curso.centros && curso.centros.length > 0) {
+                            html += 'Centros: ';
+                            curso.centros.forEach(function(centro) {
+                                html += centro.nome + ' (' + centro.pivot.preco + '€, ' + centro.pivot.duracao + '), ';
+                            });
+                            html += '<br>';
+                        } else {
+                            html += '<span style="color: red;">ERRO: Centros undefined ou vazio</span><br>';
+                        }
+                        html += '</div>';
+                    });
+                    $('#resultado-cursos').html(html);
+                })
+                .fail(function(xhr) {
+                    $('#resultado-cursos').html('Erro: ' + xhr.status + ' - ' + xhr.responseText);
+                });
+        }
+
+        function testarCursosPorCentro() {
+            $('#resultado-cursos').html('Carregando cursos do centro 1...');
+            
+            $.get('/api/cursos?centro_id=1')
+                .done(function(data) {
+                    console.log('Cursos do Centro 1:', data);
+                    let html = '<h3>Centro 1 - Total: ' + data.length + ' cursos</h3>';
+                    data.forEach(function(curso) {
+                        html += '<div style="border: 1px solid #00f; margin: 10px; padding: 10px;">';
+                        html += '<strong>' + curso.nome + '</strong><br>';
+                        html += 'Centros: ';
+                        if (curso.centros) {
+                            curso.centros.forEach(function(centro) {
+                                html += centro.nome + ', ';
+                            });
+                        }
+                        html += '</div>';
+                    });
+                    $('#resultado-cursos').html(html);
+                })
+                .fail(function(xhr) {
+                    $('#resultado-cursos').html('Erro: ' + xhr.status + ' - ' + xhr.responseText);
+                });
+        }
+
+        function testarCentros() {
+            $('#resultado-centros').html('Carregando...');
+            
+            $.get('/api/centros')
+                .done(function(data) {
+                    console.log('Centros:', data);
+                    let html = '<h3>Total: ' + data.length + ' centros</h3>';
+                    data.forEach(function(centro) {
+                        html += '<div style="border: 1px solid #0a0; margin: 10px; padding: 10px;">';
+                        html += '<strong>' + centro.nome + '</strong><br>';
+                        html += 'Localização: ' + centro.localizacao + '<br>';
+                        html += '</div>';
+                    });
+                    $('#resultado-centros').html(html);
+                })
+                .fail(function(xhr) {
+                    $('#resultado-centros').html('Erro: ' + xhr.status + ' - ' + xhr.responseText);
+                });
+        }
+
+        function testarPreInscricao() {
+            $('#resultado-pre-inscricao').html('Testando...');
+            
+            const dados = {
+                curso_id: 1,
+                centro_id: 1,
+                nome_completo: "João Teste",
+                contactos: JSON.stringify([{"tipo": "telemovel", "valor": "912345678"}]),
+                email: "joao@teste.com",
+                observacoes: "Teste da API"
+            };
+
+            $.ajax({
+                url: '/api/pre-inscricoes',
+                method: 'POST',
+                data: JSON.stringify(dados),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    $('#resultado-pre-inscricao').html('<span style="color: green;">Sucesso: ' + JSON.stringify(response) + '</span>');
+                },
+                error: function(xhr) {
+                    $('#resultado-pre-inscricao').html('<span style="color: red;">Erro: ' + xhr.status + ' - ' + xhr.responseText + '</span>');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

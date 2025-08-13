@@ -591,8 +591,11 @@
     <header class="main-header">
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
-                <a class="navbar-brand" href="{{ route('site.home') }}">
-                    <i class="fas fa-graduation-cap me-2"></i>MC-COMERCIAL
+                <a class="navbar-brand d-flex align-items-center" href="{{ route('site.home') }}">
+                    <div class="text-center">
+                        <img src="{{ asset('images/logo.png') }}" alt="MC-COMERCIAL" style="height: 40px; max-height: 40px; width: auto; display: block; margin: 0 auto;">
+                        <div style="font-size: 0.75rem; font-weight: 600; color: var(--primary-color); line-height: 1; margin-top: 2px;">MC-COMERCIAL</div>
+                    </div>
                 </a>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -636,11 +639,14 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4">
-                    <h5><i class="fas fa-graduation-cap me-2"></i>MC-COMERCIAL</h5>
-                    <p class="text-muted">
-                        Centro de formação profissional com mais de 10 anos de experiência 
-                        na preparação de profissionais qualificados para o mercado de trabalho.
-                    </p>
+                    <div class="text-center mb-3">
+                        <img src="{{ asset('images/logo.png') }}" alt="MC-COMERCIAL" style="height: 35px; max-height: 35px; width: auto; display: block; margin: 0 auto;">
+                        <h5 style="margin-top: 0.5rem; margin-bottom: 0; color: var(--primary-color);"></h5>
+                    </div>
+                    <p style="color: #fff;">
+    Centro de formação profissional com mais de 10 anos de experiência 
+    na preparação de profissionais qualificados para o mercado de trabalho.
+</p>
                     <div class="social-links mt-3">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>

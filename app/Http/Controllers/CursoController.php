@@ -22,45 +22,59 @@ class CursoController extends Controller
     {
         $validated = $request->validate([
             'nome' => 'required|string|max:100|unique:cursos,nome',
-            'modalidade' => 'required|string',
+            'descricao' => 'nullable|string',
+            'programa' => 'nullable|string',
+            'area' => 'required|string|max:100',
+            'modalidade' => 'required|in:presencial,online,hibrido',
+            'imagem_url' => 'nullable|url|max:255',
+            'ativo' => 'nullable'
         ]);
+        
+        // Garantir que ativo seja boolean
+        $validated['ativo'] = $request->input('ativo', '1') == '1' ? true : false;
+        
         $curso = Curso::create($validated);
         return redirect()->route('cursos.index')->with('success', 'Curso criado com sucesso!');
     }
 
-    public function show($id)
+    public function show(Curso $curso)
     {
-        $curso = Curso::with(['centros', 'formadores', 'horarios', 'preInscricoes'])->findOrFail($id);
+        $curso->load(['centros', 'formadores', 'horarios', 'preInscricoes']);
         return view('cursos.show', compact('curso'));
     }
 
-    public function edit($id)
+    public function edit(Curso $curso)
     {
-        $curso = Curso::findOrFail($id);
         return view('cursos.edit', compact('curso'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Curso $curso)
     {
-        $curso = Curso::findOrFail($id);
         $validated = $request->validate([
             'nome' => 'required|string|max:100|unique:cursos,nome,' . $curso->id,
-            'modalidade' => 'required|string',
+            'descricao' => 'nullable|string',
+            'programa' => 'nullable|string',
+            'area' => 'required|string|max:100',
+            'modalidade' => 'required|in:presencial,online,hibrido',
+            'imagem_url' => 'nullable|url|max:255',
+            'ativo' => 'nullable'
         ]);
+        
+        // Garantir que ativo seja boolean
+        $validated['ativo'] = $request->input('ativo', '1') == '1' ? true : false;
+        
         $curso->update($validated);
         return redirect()->route('cursos.index')->with('success', 'Curso atualizado com sucesso!');
     }
 
-    public function destroy($id)
+    public function destroy(Curso $curso)
     {
-        $curso = Curso::findOrFail($id);
         $curso->delete();
         return redirect()->route('cursos.index')->with('success', 'Curso deletado com sucesso!');
     }
 
-    public function toggleStatus($id)
+    public function toggleStatus(Curso $curso)
     {
-        $curso = Curso::findOrFail($id);
         $curso->ativo = !$curso->ativo;
         $curso->save();
         return redirect()->route('cursos.index')->with('success', 'Status do curso alterado!');

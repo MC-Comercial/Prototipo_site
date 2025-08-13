@@ -27,9 +27,7 @@
                 </p>
             </div>
             <div class="col-lg-6 text-center">
-                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                     alt="Equipa MC Comercial" 
-                     class="img-fluid rounded-3 shadow-lg">
+                <img src="/images/about1.jpg" alt="Equipa MC Comercial" class="img-fluid rounded-3 shadow-lg">
             </div>
         </div>
     </div>
@@ -174,12 +172,9 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <div class="member-photo mb-3">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
-                                 alt="Director Geral" 
-                                 class="rounded-circle"
-                                 style="width: 100px; height: 100px; object-fit: cover;">
+                            <img src="/images/banner-4.jpg" alt="Director Geral" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
                         </div>
-                        <h6>João Silva</h6>
+                        <h6>Osvaldo Cazola Cavunge</h6>
                         <small class="text-muted">Director Geral</small>
                         <p class="small mt-2">
                             15 anos de experiência em gestão 
@@ -193,31 +188,9 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <div class="member-photo mb-3">
-                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
-                                 alt="Directora Pedagógica" 
-                                 class="rounded-circle"
-                                 style="width: 100px; height: 100px; object-fit: cover;">
+                            <img src="/images/banner-9.jpg" alt="Coordenador Técnico" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
                         </div>
-                        <h6>Maria Santos</h6>
-                        <small class="text-muted">Directora Pedagógica</small>
-                        <p class="small mt-2">
-                            Especialista em desenvolvimento 
-                            curricular e metodologias de ensino.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <div class="member-photo mb-3">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
-                                 alt="Coordenador Técnico" 
-                                 class="rounded-circle"
-                                 style="width: 100px; height: 100px; object-fit: cover;">
-                        </div>
-                        <h6>Pedro Costa</h6>
+                        <h6>Agostinho António Piriquito</h6>
                         <small class="text-muted">Coordenador Técnico</small>
                         <p class="small mt-2">
                             Engenheiro com vasta experiência 
@@ -231,13 +204,10 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <div class="member-photo mb-3">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
-                                 alt="Gestora de Qualidade" 
-                                 class="rounded-circle"
-                                 style="width: 100px; height: 100px; object-fit: cover;">
+                            <img src="/images/banner-2.jpg" alt="Gestora de Qualidade" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
                         </div>
-                        <h6>Ana Ferreira</h6>
-                        <small class="text-muted">Gestora de Qualidade</small>
+                        <h6>Manuel Miguel Bernardo</h6>
+                        <small class="text-muted">Gestor de Qualidade</small>
                         <p class="small mt-2">
                             Responsável pela garantia de 
                             qualidade em todos os processos.
@@ -245,6 +215,23 @@
                     </div>
                 </div>
             </div>
+
+             <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="member-photo mb-3">
+                            <img src="/images/banner-3.jpg" alt="Director Geral" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                        </div>
+                        <h6>João Kadima Mutanda</h6>
+                        <small class="text-muted">Director geral de RH</small>
+                        <p class="small mt-2">
+                            15 anos de experiência em Recrutamento, treinamento
+                            folhsd de pagamento e clima organizacional.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>

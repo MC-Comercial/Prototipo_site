@@ -111,10 +111,14 @@ function exibirCentros(centros) {
             // Processar contactos
             try {
                 if (centro.contactos) {
-                    const contactos = JSON.parse(centro.contactos);
-                    if (contactos.length > 0) {
+                    const contactos = typeof centro.contactos === 'string' ? JSON.parse(centro.contactos) : centro.contactos;
+                    if (Array.isArray(contactos) && contactos.length > 0) {
                         contactosHtml = contactos.map(c => 
                             `<span class="badge bg-light text-dark me-1 mb-1">${c.tipo}: ${c.valor}</span>`
+                        ).join('');
+                    } else if (typeof contactos === 'object') {
+                        contactosHtml = Object.entries(contactos).map(([tipo, valor]) => 
+                            `<span class="badge bg-light text-dark me-1 mb-1">${tipo}: ${valor}</span>`
                         ).join('');
                     }
                 }

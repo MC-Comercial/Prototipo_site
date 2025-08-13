@@ -43,6 +43,25 @@ class PreInscricaoController extends Controller
             'observacoes' => 'nullable|string|max:500'
         ]);
 
+        // Verificar se o curso está associado ao centro selecionado
+        $curso = \App\Models\Curso::with('centros')->find($validated['curso_id']);
+        $centro = \App\Models\Centro::find($validated['centro_id']);
+        
+        if (!$curso || !$centro) {
+            return response()->json([
+                'status' => 'erro',
+                'mensagem' => 'Dados do curso ou centro não encontrados.'
+            ], 404);
+        }
+        
+        $cursoTemCentro = $curso->centros->contains('id', $validated['centro_id']);
+        if (!$cursoTemCentro) {
+            return response()->json([
+                'status' => 'erro',
+                'mensagem' => 'O curso selecionado não está disponível no centro escolhido.'
+            ], 422);
+        }
+
         // Processar contactos - vem como JSON string do frontend
         try {
             $contactosArray = json_decode($validated['contactos'], true);

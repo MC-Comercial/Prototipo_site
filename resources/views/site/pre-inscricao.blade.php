@@ -140,8 +140,10 @@
     <div class="container">
         <div class="hero-section">
             <div class="hero-header">
-                <i class="fas fa-graduation-cap fa-3x mb-3"></i>
-                <h1 class="display-5 fw-bold">MC Comercial</h1>
+                <div class="text-center mb-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="MC-COMERCIAL" style="height: 60px; max-height: 60px; width: auto; display: block; margin: 0 auto;">
+                    <h1 class="display-5 fw-bold" style="margin-top: 0.5rem; margin-bottom: 0;">MC-COMERCIAL</h1>
+                </div>
                 <p class="lead mb-0">Inscreva-se nos nossos cursos de formação</p>
             </div>
             
@@ -373,6 +375,20 @@
             });
         }
 
+        function carregarCentrosParaCurso(cursoId) {
+            if (cursoSelecionado && cursoSelecionado.centros) {
+                $('#centro_id').html('<option value="">Selecione um centro</option>');
+                cursoSelecionado.centros.forEach(centro => {
+                    const preco = centro.pivot && centro.pivot.preco ? ` - ${centro.pivot.preco}€` : '';
+                    const duracao = centro.pivot && centro.pivot.duracao ? ` (${centro.pivot.duracao})` : '';
+                    $('#centro_id').append(`<option value="${centro.id}">${centro.nome} - ${centro.localizacao}${preco}${duracao}</option>`);
+                });
+            } else {
+                // Fallback para todos os centros se não houver centros específicos
+                preencherSelectCentros();
+            }
+        }
+
         function exibirCursos() {
             const areaFiltro = $('#filtroArea').val();
             const modalidadeFiltro = $('#filtroModalidade').val();
@@ -429,6 +445,9 @@
             // Destacar curso selecionado
             $('.course-card').removeClass('border-primary');
             $(event.currentTarget).addClass('border-primary');
+            
+            // Carregar centros disponíveis para este curso
+            carregarCentrosParaCurso(cursoId);
             
             // Habilitar botão próximo
             $('#btnProximo').prop('disabled', false);
@@ -520,8 +539,16 @@
             if (centroSelecionado) {
                 let contactosHtml = '';
                 if (centroSelecionado.contactos) {
-                    const contactos = JSON.parse(centroSelecionado.contactos);
-                    contactosHtml = contactos.map(c => `${c.tipo}: ${c.valor}`).join('<br>');
+                    try {
+                        const contactos = typeof centroSelecionado.contactos === 'string' ? JSON.parse(centroSelecionado.contactos) : centroSelecionado.contactos;
+                        if (Array.isArray(contactos)) {
+                            contactosHtml = contactos.map(c => `${c.tipo}: ${c.valor}`).join('<br>');
+                        } else if (typeof contactos === 'object') {
+                            contactosHtml = Object.entries(contactos).map(([tipo, valor]) => `${tipo}: ${valor}`).join('<br>');
+                        }
+                    } catch (e) {
+                        console.log('Erro ao processar contactos:', e);
+                    }
                 }
 
                 const infoHtml = `

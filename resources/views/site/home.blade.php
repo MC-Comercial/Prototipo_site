@@ -26,10 +26,7 @@
                     </div>
                 </div>
                 <div class="col-lg-6 text-center">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                         alt="Formação Profissional" 
-                         class="img-fluid rounded-3 shadow-lg"
-                         style="max-height: 400px; object-fit: cover;">
+                    <img src="/images/banner-11.jpg" alt="Formação Profissional" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px; object-fit: cover;">
                 </div>
             </div>
         </div>
@@ -119,8 +116,9 @@
             <div class="col-lg-4 mb-4">
                 <div class="card h-100 service-card" onclick="abrirServicoAcademico()">
                     <div class="card-img-container position-relative">
-                        <img src="https://site.youware.com/users-website-assets/prod/c452da46-1437-4697-a416-fe7935ee1d97/d08e324270874d27b2bcd8b499c4d807.jpg" 
-                             alt="Projectos Académicos" class="card-img-top service-img">
+                        <div class="card-img-top service-img d-flex align-items-center justify-content-center" style="height: 120px;">
+                            <i class="fas fa-project-diagram fa-3x text-primary"></i>
+                        </div>
                         <div class="card-overlay">
                             <div class="feature-icon">
                                 <i class="fas fa-book"></i>
@@ -142,8 +140,9 @@
             <div class="col-lg-4 mb-4">
                 <div class="card h-100 service-card" onclick="abrirLoja()">
                     <div class="card-img-container position-relative">
-                        <img src="https://site.youware.com/users-website-assets/prod/c452da46-1437-4697-a416-fe7935ee1d97/501612e340e644e19958a542d1ae78e5.png" 
-                             alt="Loja" class="card-img-top service-img">
+                        <div class="card-img-top service-img d-flex align-items-center justify-content-center" style="height: 120px;">
+                            <i class="fas fa-store fa-3x text-success"></i>
+                        </div>
                         <div class="card-overlay">
                             <div class="feature-icon">
                                 <i class="fas fa-desktop"></i>
@@ -165,8 +164,9 @@
             <div class="col-lg-4 mb-4">
                 <div class="card h-100 service-card" onclick="abrirSnackBar()">
                     <div class="card-img-container position-relative">
-                        <img src="https://site.youware.com/users-website-assets/prod/c452da46-1437-4697-a416-fe7935ee1d97/8d9205e2c07e4b6eb5b0a22876465ff9.jpg" 
-                             alt="SNACK-BAR" class="card-img-top service-img">
+                        <div class="card-img-top service-img d-flex align-items-center justify-content-center" style="height: 120px;">
+                            <i class="fas fa-coffee fa-3x text-warning"></i>
+                        </div>
                         <div class="card-overlay">
                             <div class="feature-icon">
                                 <i class="fas fa-utensils"></i>
@@ -254,10 +254,7 @@
             </div>
             
             <div class="col-lg-6 text-center">
-                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                     alt="Equipa MC Comercial"
-                     class="img-fluid rounded-3 shadow-lg"
-                     style="max-height: 400px; object-fit: cover;">
+                <img src="/images/about1.jpg" alt="Equipa MC Comercial" class="img-fluid rounded-3 shadow-lg" style="max-height: 400px; object-fit: cover;">
             </div>
         </div>
     </div>
@@ -665,9 +662,14 @@ function exibirCentrosHome(centros) {
             let contactosInfo = '';
             try {
                 if (centro.contactos) {
-                    const contactos = JSON.parse(centro.contactos);
-                    if (contactos.length > 0) {
+                    const contactos = typeof centro.contactos === 'string' ? JSON.parse(centro.contactos) : centro.contactos;
+                    if (Array.isArray(contactos) && contactos.length > 0) {
                         contactosInfo = `<small class="text-muted"><i class="fas fa-phone me-1"></i>${contactos[0].valor}</small>`;
+                    } else if (typeof contactos === 'object') {
+                        const firstContactValue = Object.values(contactos)[0];
+                        if (firstContactValue) {
+                            contactosInfo = `<small class="text-muted"><i class="fas fa-phone me-1"></i>${firstContactValue}</small>`;
+                        }
                     }
                 }
             } catch (e) {

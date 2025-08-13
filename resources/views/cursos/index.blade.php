@@ -123,7 +123,7 @@ function carregarCursos() {
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="visualizarCurso(${curso.id})" title="Visualizar">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <a href="{{ route('cursos.edit', '') }}/${curso.id}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <a href="/cursos/${curso.id}/edit" class="btn btn-sm btn-outline-warning" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarCurso(${curso.id})" title="Eliminar">

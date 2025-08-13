@@ -80,11 +80,51 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="9" class="text-center">
-                                <i class="fas fa-spinner fa-spin me-2"></i>Carregando pré-inscrições...
-                            </td>
-                        </tr>
+                        @forelse($preInscricoes as $preInscricao)
+                            <tr>
+                                <td>{{ $preInscricao->id }}</td>
+                                <td><strong>{{ $preInscricao->nome_completo }}</strong></td>
+                                <td>{{ $preInscricao->email ?? 'Não informado' }}</td>
+                                <td>{{ $preInscricao->curso->nome ?? 'Curso não encontrado' }}</td>
+                                <td>{{ $preInscricao->centro->nome ?? 'Centro não encontrado' }}</td>
+                                <td>
+                                    @if($preInscricao->horario)
+                                        {{ $preInscricao->horario->dia_semana }} - {{ $preInscricao->horario->periodo }}
+                                    @else
+                                        <span class="text-muted">Não definido</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($preInscricao->status === 'pendente')
+                                        <span class="badge bg-warning">Pendente</span>
+                                    @elseif($preInscricao->status === 'confirmado')
+                                        <span class="badge bg-success">Confirmado</span>
+                                    @elseif($preInscricao->status === 'cancelado')
+                                        <span class="badge bg-danger">Cancelado</span>
+                                    @else
+                                        <span class="badge bg-secondary">{{ $preInscricao->status }}</span>
+                                    @endif
+                                </td>
+                                <td>{{ $preInscricao->created_at->format('d/m/Y') }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-info btn-sm" onclick="visualizarPreInscricao({{ $preInscricao->id }})" title="Visualizar">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <a href="{{ route('pre-inscricoes.edit', $preInscricao->id) }}" class="btn btn-outline-warning btn-sm" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deletarPreInscricao({{ $preInscricao->id }})" title="Deletar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center text-muted">Nenhuma pré-inscrição encontrada</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -113,174 +153,115 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
-    carregarDados();
-    carregarCursos();
-    carregarCentros();
-});
-
-function carregarDados() {
-    carregarPreInscricoes();
-}
-
-function carregarPreInscricoes() {
-    const filtros = {
-        status: $('#filtroStatus').val(),
-        curso_id: $('#filtroCurso').val(),
-        centro_id: $('#filtroCentro').val()
-    };
-
-    const queryString = Object.keys(filtros)
-        .filter(key => filtros[key])
-        .map(key => `${key}=${encodeURIComponent(filtros[key])}`)
-        .join('&');
-
-    const url = '/api/pre-inscricoes' + (queryString ? '?' + queryString : '');
-
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-        window.location.href = '/login';
-        return;
-    }
-
-    $.ajax({
-        url: url,
-        type: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token
-        },
-        success: function(data) {
-        let html = '';
-        
-        if (data.length === 0) {
-            html = '<tr><td colspan="9" class="text-center text-muted">Nenhuma pré-inscrição encontrada</td></tr>';
-        } else {
-            data.forEach(function(preInscricao) {
-                const statusBadge = getStatusBadge(preInscricao.status);
-                const dataFormatada = new Date(preInscricao.created_at).toLocaleDateString('pt-PT');
-                
-                html += `
-                    <tr>
-                        <td>${preInscricao.id}</td>
-                        <td>
-                            <strong>${preInscricao.nome_completo}</strong>
-                        </td>
-                        <td>${preInscricao.email || '<span class="text-muted">N/A</span>'}</td>
-                        <td>${preInscricao.curso ? preInscricao.curso.nome : '<span class="text-muted">N/A</span>'}</td>
-                        <td>${preInscricao.centro ? preInscricao.centro.nome : '<span class="text-muted">N/A</span>'}</td>
-                        <td>${preInscricao.horario ? preInscricao.horario.descricao : '<span class="text-muted">N/A</span>'}</td>
-        let html = '';
-        if (data.length === 0) {
-            html = '<tr><td colspan="9" class="text-center text-muted">Nenhuma pré-inscrição encontrada</td></tr>';
-        } else {
-            data.forEach(function(preInscricao) {
-                const statusBadge = getStatusBadge(preInscricao.status);
-                const dataFormatada = new Date(preInscricao.created_at).toLocaleDateString('pt-PT');
-                html += `
-                    <tr>
-                        <td>${preInscricao.id}</td>
-                        <td>
-                            <strong>${preInscricao.nome_completo}</strong>
-                        </td>
-                        <td>${preInscricao.email || '<span class="text-muted">N/A</span>'}</td>
-                        <td>${preInscricao.curso ? preInscricao.curso.nome : '<span class="text-muted">N/A</span>'}</td>
-                        <td>${preInscricao.centro ? preInscricao.centro.nome : '<span class="text-muted">N/A</span>'}</td>
-                        <td>${preInscricao.horario ? preInscricao.horario.descricao : '<span class="text-muted">N/A</span>'}</td>
-                        <td>${statusBadge}</td>
-                        <td>${dataFormatada}</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="visualizarPreInscricao(${preInscricao.id})" title="Visualizar">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <a href="{{ route('pre-inscricoes.edit', '') }}/${preInscricao.id}" class="btn btn-sm btn-outline-warning" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Ações Rápidas">
-                                        <i class="fas fa-cog"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        ${preInscricao.status === 'pendente' ? `
-                                            <li><a class="dropdown-item" href="#" onclick="alterarStatus(${preInscricao.id}, 'confirmado')">
-                                                <i class="fas fa-check me-2 text-success"></i>Confirmar
-                                            </a></li>
-                                            <li><a class="dropdown-item" href="#" onclick="alterarStatus(${preInscricao.id}, 'cancelado')">
-                                                <i class="fas fa-times me-2 text-danger"></i>Cancelar
-                                            </a></li>
-                                        ` : ''}
-                                        ${preInscricao.status === 'confirmado' ? `
-                                            <li><a class="dropdown-item" href="#" onclick="alterarStatus(${preInscricao.id}, 'cancelado')">
-                                                <i class="fas fa-times me-2 text-danger"></i>Cancelar
-                                            </a></li>
-                                        ` : ''}
-                                        ${preInscricao.status === 'cancelado' ? `
-                                            <li><a class="dropdown-item" href="#" onclick="alterarStatus(${preInscricao.id}, 'pendente')">
-                                                <i class="fas fa-undo me-2 text-warning"></i>Pendente
-                                            </a></li>
-                                        ` : ''}
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="#" onclick="eliminarPreInscricao(${preInscricao.id})">
-                                            <i class="fas fa-trash me-2"></i>Eliminar
-                                        </a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
+    // Inicializar DataTable se necessário
+    $('#preInscricoesTable').DataTable({
+        language: {
+            url: '/js/datatables-pt.js'
         }
-        $('#preInscricoesTable tbody').html(html);
-    },
-    error: function(xhr) {
-        let html = '<tr><td colspan="9" class="text-center text-danger">Erro ao carregar pré-inscrições (autenticação necessária)</td></tr>';
-        $('#preInscricoesTable tbody').html(html);
-    }
+    });
 });
-// Verificar autenticação
-function verificarAutenticacao() {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-        window.location.href = '/login';
-    }
-    return token;
-}
-function carregarCursos() {
-    const token = localStorage.getItem('auth_token');
-    if (!token) return;
-    
+
+/**
+ * Visualiza os detalhes de uma pré-inscrição específica
+ * @param {number} id - ID da pré-inscrição
+ */
+function visualizarPreInscricao(id) {
     $.ajax({
-        url: '/api/cursos',
-        type: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token
+        url: `/api/pre-inscricoes/${id}`,
+        method: 'GET',
+        success: function(preInscricao) {
+            const statusBadge = getStatusBadge(preInscricao.status);
+            
+            let contactos = '';
+            if (preInscricao.contactos) {
+                try {
+                    const contactosObj = typeof preInscricao.contactos === 'string' 
+                        ? JSON.parse(preInscricao.contactos) 
+                        : preInscricao.contactos;
+                    
+                    contactos = '<ul class="list-unstyled mb-0">';
+                    Object.keys(contactosObj).forEach(key => {
+                        contactos += `<li><strong>${key}:</strong> ${contactosObj[key]}</li>`;
+                    });
+                    contactos += '</ul>';
+                } catch (e) {
+                    contactos = preInscricao.contactos;
+                }
+            } else {
+                contactos = '<span class="text-muted">Nenhum contacto registado</span>';
+            }
+            
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>${preInscricao.nome_completo}</h5>
+                        <p class="mb-2"><strong>Email:</strong> ${preInscricao.email || '<span class="text-muted">N/A</span>'}</p>
+                        <p class="mb-2"><strong>Status:</strong> ${statusBadge}</p>
+                        <p class="mb-2"><strong>Data de Inscrição:</strong> ${new Date(preInscricao.created_at).toLocaleDateString('pt-PT')}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong>Curso:</strong> ${preInscricao.curso ? preInscricao.curso.nome : '<span class="text-muted">N/A</span>'}</p>
+                        <p class="mb-2"><strong>Centro:</strong> ${preInscricao.centro ? preInscricao.centro.nome : '<span class="text-muted">N/A</span>'}</p>
+                        <p class="mb-2"><strong>Horário:</strong> ${preInscricao.horario ? preInscricao.horario.descricao : '<span class="text-muted">N/A</span>'}</p>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <h6><strong>Contactos:</strong></h6>
+                    ${contactos}
+                </div>
+                
+                ${preInscricao.observacoes ? `
+                    <div class="mt-3">
+                        <h6><strong>Observações:</strong></h6>
+                        <div class="bg-light p-3 rounded">
+                            <p class="mb-0">${preInscricao.observacoes}</p>
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+            
+            $('#viewModalContent').html(html);
+            $('#viewModal').modal('show');
         },
-        success: function(data) {
-        let options = '<option value="">Todos os cursos</option>';
-        data.forEach(function(curso) {
-            options += `<option value="${curso.id}">${curso.nome}</option>`;
-        });
-        $('#filtroCurso').html(options);
+        error: function(xhr, status, error) {
+            console.error('Erro ao carregar detalhes da pré-inscrição:', error);
+            alert('Erro ao carregar os detalhes da pré-inscrição.');
+        }
     });
 }
 
-function carregarCentros() {
-    const token = localStorage.getItem('auth_token');
-    if (!token) return;
-    
-    $.ajax({
-        url: '/api/centros',
-        type: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token
-        },
-        success: function(data) {
-        let options = '<option value="">Todos os centros</option>';
-        data.forEach(function(centro) {
-            options += `<option value="${centro.id}">${centro.nome}</option>`;
-        });
-        $('#filtroCentro').html(options);
-    });
+/**
+ * Deleta uma pré-inscrição específica
+ * @param {number} id - ID da pré-inscrição a deletar
+ */
+function deletarPreInscricao(id) {
+    if (confirm('Tem certeza que deseja deletar esta pré-inscrição? Esta ação não pode ser desfeita.')) {
+        // Criar um formulário para enviar a requisição DELETE
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/pre-inscricoes/${id}`;
+        form.style.display = 'none';
+        
+        // Adicionar token CSRF
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+        
+        // Adicionar método DELETE
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        form.appendChild(methodInput);
+        
+        // Adicionar ao body e submeter
+        document.body.appendChild(form);
+        form.submit();
+    }
 }
 
 function getStatusBadge(status) {
@@ -297,150 +278,15 @@ function getStatusBadge(status) {
 }
 
 function aplicarFiltros() {
-    carregarPreInscricoes();
+    // Implementar filtros se necessário
+    console.log('Filtros aplicados');
 }
 
 function limparFiltros() {
     $('#filtroStatus').val('');
     $('#filtroCurso').val('');
     $('#filtroCentro').val('');
-    carregarPreInscricoes();
-}
-
-function visualizarPreInscricao(id) {
-    $.get(`/api/pre-inscricoes/${id}`, function(preInscricao) {
-        const statusBadge = getStatusBadge(preInscricao.status);
-        
-        let contactos = '';
-        if (preInscricao.contactos) {
-            try {
-                const contactosObj = typeof preInscricao.contactos === 'string' 
-                    ? JSON.parse(preInscricao.contactos) 
-                    : preInscricao.contactos;
-                
-                contactos = '<ul class="list-unstyled mb-0">';
-                Object.keys(contactosObj).forEach(key => {
-                    contactos += `<li><strong>${key}:</strong> ${contactosObj[key]}</li>`;
-                });
-                contactos += '</ul>';
-            } catch (e) {
-                contactos = preInscricao.contactos;
-            }
-        } else {
-            contactos = '<span class="text-muted">Nenhum contacto registado</span>';
-        }
-        
-        let html = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>${preInscricao.nome_completo}</h5>
-                    <p class="mb-2"><strong>Email:</strong> ${preInscricao.email || '<span class="text-muted">N/A</span>'}</p>
-                    <p class="mb-2"><strong>Status:</strong> ${statusBadge}</p>
-                    <p class="mb-2"><strong>Data de Inscrição:</strong> ${new Date(preInscricao.created_at).toLocaleDateString('pt-PT')}</p>
-                </div>
-                <div class="col-md-6">
-                    <p class="mb-2"><strong>Curso:</strong> ${preInscricao.curso ? preInscricao.curso.nome : '<span class="text-muted">N/A</span>'}</p>
-                    <p class="mb-2"><strong>Centro:</strong> ${preInscricao.centro ? preInscricao.centro.nome : '<span class="text-muted">N/A</span>'}</p>
-                    <p class="mb-2"><strong>Horário:</strong> ${preInscricao.horario ? preInscricao.horario.descricao : '<span class="text-muted">N/A</span>'}</p>
-                </div>
-            </div>
-            
-            <div class="mt-3">
-                <h6><strong>Contactos:</strong></h6>
-                ${contactos}
-            </div>
-            
-            ${preInscricao.observacoes ? `
-                <div class="mt-3">
-                    <h6><strong>Observações:</strong></h6>
-                    <div class="bg-light p-3 rounded">
-                        <p class="mb-0">${preInscricao.observacoes}</p>
-                    </div>
-                </div>
-            ` : ''}
-        `;
-        
-        $('#viewModalContent').html(html);
-        $('#viewModal').modal('show');
-    });
-}
-
-function alterarStatus(id, novoStatus) {
-    const statusTexto = {
-        'pendente': 'pendente',
-        'confirmado': 'confirmado',
-        'cancelado': 'cancelado'
-    };
-
-    Swal.fire({
-        title: 'Confirmar alteração',
-        text: `Alterar status para "${statusTexto[novoStatus]}"?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#007bff',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Sim, alterar!',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: `/api/pre-inscricoes/${id}`,
-                method: 'PUT',
-                data: JSON.stringify({ status: novoStatus }),
-                contentType: 'application/json',
-                success: function(response) {
-                    Swal.fire(
-                        'Alterado!',
-                        'Status alterado com sucesso.',
-                        'success'
-                    );
-                    carregarPreInscricoes();
-                },
-                error: function(xhr) {
-                    Swal.fire(
-                        'Erro!',
-                        'Ocorreu um erro ao alterar o status.',
-                        'error'
-                    );
-                }
-            });
-        }
-    });
-}
-
-function eliminarPreInscricao(id) {
-    Swal.fire({
-        title: 'Tem certeza?',
-        text: 'Esta ação irá eliminar a pré-inscrição permanentemente!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc2626',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Sim, eliminar!',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: `/api/pre-inscricoes/${id}`,
-                method: 'DELETE',
-                success: function(response) {
-                    Swal.fire(
-                        'Eliminado!',
-                        'A pré-inscrição foi eliminada com sucesso.',
-                        'success'
-                    );
-                    carregarPreInscricoes();
-                },
-                error: function(xhr) {
-                    Swal.fire(
-                        'Erro!',
-                        'Ocorreu um erro ao eliminar a pré-inscrição.',
-                        'error'
-                    );
-                }
-            });
-        }
-    });
+    console.log('Filtros limpos');
 }
 </script>
 @endsection

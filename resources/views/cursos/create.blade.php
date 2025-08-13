@@ -29,7 +29,8 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form id="cursoForm">
+                    <form id="cursoForm" action="{{ route('cursos.store') }}" method="POST">
+                        @csrf
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label for="nome" class="form-label">Nome do Curso <span class="text-danger">*</span></label>
@@ -51,6 +52,7 @@
                                     <option value="">Selecione a modalidade</option>
                                     <option value="presencial">Presencial</option>
                                     <option value="online">Online</option>
+                                    <option value="hibrido">Híbrido</option>
                                 </select>
                             </div>
                             
@@ -145,11 +147,7 @@ $(document).ready(function() {
         atualizarPreview();
     });
 
-    // Submit do formulário
-    $('#cursoForm').on('submit', function(e) {
-        e.preventDefault();
-        criarCurso();
-    });
+    // Submit do formulário via form normal (não AJAX)
 });
 
 function atualizarPreview() {
@@ -169,7 +167,9 @@ function atualizarPreview() {
             ? '<span class="badge bg-info">Online</span>' 
             : modalidade === 'presencial' 
                 ? '<span class="badge bg-warning text-dark">Presencial</span>' 
-                : '';
+                : modalidade === 'hibrido'
+                    ? '<span class="badge bg-primary">Híbrido</span>'
+                    : '';
         
         const imagem = imagem_url 
             ? `<img src="${imagem_url}" alt="Preview" class="img-fluid rounded mb-2" style="max-height: 100px;" onerror="this.style.display='none'">` 
@@ -192,63 +192,6 @@ function atualizarPreview() {
     }
 }
 
-function criarCurso() {
-    const formData = {
-        nome: $('#nome').val(),
-        area: $('#area').val(),
-        modalidade: $('#modalidade').val(),
-        ativo: parseInt($('#ativo').val()),
-        imagem_url: $('#imagem_url').val() || null,
-        descricao: $('#descricao').val() || null,
-        programa: $('#programa').val() || null
-    };
-
-    $.ajax({
-        url: '/api/cursos',
-        method: 'POST',
-        data: JSON.stringify(formData),
-        contentType: 'application/json',
-        beforeSend: function() {
-            $('#cursoForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Guardando...');
-        },
-        success: function(response) {
-            Swal.fire({
-                title: 'Sucesso!',
-                text: 'Curso criado com sucesso!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '{{ route("cursos.index") }}';
-            });
-        },
-        error: function(xhr) {
-            console.error('Erro ao criar curso:', xhr);
-            
-            if (xhr.status === 401) {
-                window.location.href = '/login';
-                return;
-            }
-            
-            let message = 'Ocorreu um erro ao criar o curso.';
-            
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                message = xhr.responseJSON.message;
-            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                const errors = Object.values(xhr.responseJSON.errors).flat();
-                message = errors.join('<br>');
-            }
-
-            Swal.fire({
-                title: 'Erro!',
-                html: message,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        },
-        complete: function() {
-            $('#cursoForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Guardar Curso');
-        }
-    });
-}
+// Função removida - usando submit normal do formulário
 </script>
 @endsection

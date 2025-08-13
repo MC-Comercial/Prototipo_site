@@ -29,6 +29,26 @@
                     </h5>
                 </div>
                 <div class="card-body">
+                    {{-- Exibir erros de validação --}}
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Erro na validação:</h6>
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Área para exibir erros via JavaScript -->
+                    <div id="errorContainer" style="display: none;">
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle me-2"></i>Erro:</h6>
+                            <div id="errorMessage"></div>
+                        </div>
+                    </div>
+
                     <form id="formadorForm">
                         <div class="row">
                             <div class="col-md-8 mb-3">

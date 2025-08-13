@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de CRUDs</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .testing { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Teste de Funcionalidade dos CRUDs</h1>
+    
+    <div class="test-section">
+        <h2>Teste de Páginas Index</h2>
+        <button onclick="testarPaginasIndex()">Testar Todas as Páginas Index</button>
+        <div id="resultado-index"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Teste de Páginas Create</h2>
+        <button onclick="testarPaginasCreate()">Testar Todas as Páginas Create</button>
+        <div id="resultado-create"></div>
+    </div>
+
+    <script>
+        function testarPaginasIndex() {
+            $('#resultado-index').html('<p class="testing">Testando páginas index...</p>');
+            
+            const paginas = [
+                { nome: 'Cursos', url: '/cursos' },
+                { nome: 'Centros', url: '/centros' },
+                { nome: 'Formadores', url: '/formadores' },
+                { nome: 'Horários', url: '/horarios' },
+                { nome: 'Pré-inscrições', url: '/pre-inscricoes' },
+                { nome: 'Categorias', url: '/categorias' },
+                { nome: 'Produtos', url: '/produtos' }
+            ];
+            
+            let resultados = '';
+            let testesCompletos = 0;
+            
+            paginas.forEach(pagina => {
+                $.get(pagina.url)
+                    .done(function() {
+                        resultados += `<p class="success">✅ ${pagina.nome} Index: OK</p>`;
+                        testesCompletos++;
+                        if (testesCompletos === paginas.length) {
+                            $('#resultado-index').html(resultados);
+                        }
+                    })
+                    .fail(function(xhr) {
+                        resultados += `<p class="error">❌ ${pagina.nome} Index: ERRO ${xhr.status}</p>`;
+                        testesCompletos++;
+                        if (testesCompletos === paginas.length) {
+                            $('#resultado-index').html(resultados);
+                        }
+                    });
+            });
+        }
+
+        function testarPaginasCreate() {
+            $('#resultado-create').html('<p class="testing">Testando páginas create...</p>');
+            
+            const paginas = [
+                { nome: 'Cursos', url: '/cursos/create' },
+                { nome: 'Centros', url: '/centros/create' },
+                { nome: 'Formadores', url: '/formadores/create' },
+                { nome: 'Horários', url: '/horarios/create' },
+                { nome: 'Pré-inscrições', url: '/pre-inscricoes/create' },
+                { nome: 'Categorias', url: '/categorias/create' },
+                { nome: 'Produtos', url: '/produtos/create' }
+            ];
+            
+            let resultados = '';
+            let testesCompletos = 0;
+            
+            paginas.forEach(pagina => {
+                $.get(pagina.url)
+                    .done(function() {
+                        resultados += `<p class="success">✅ ${pagina.nome} Create: OK</p>`;
+                        testesCompletos++;
+                        if (testesCompletos === paginas.length) {
+                            $('#resultado-create').html(resultados);
+                        }
+                    })
+                    .fail(function(xhr) {
+                        resultados += `<p class="error">❌ ${pagina.nome} Create: ERRO ${xhr.status}</p>`;
+                        testesCompletos++;
+                        if (testesCompletos === paginas.length) {
+                            $('#resultado-create').html(resultados);
+                        }
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

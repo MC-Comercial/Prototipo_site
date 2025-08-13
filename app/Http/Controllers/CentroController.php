@@ -23,8 +23,16 @@ class CentroController extends Controller
         $validated = $request->validate([
             'nome' => 'required|string|max:100|unique:centros,nome',
             'localizacao' => 'required|string|max:150',
+            'contactos' => 'required|array|min:1',
+            'contactos.*' => 'required|string',
             'email' => 'nullable|email|max:100',
         ]);
+        
+        // Normalizar email para lowercase se fornecido
+        if (!empty($validated['email'])) {
+            $validated['email'] = strtolower($validated['email']);
+        }
+        
         $centro = Centro::create($validated);
         return redirect()->route('centros.index')->with('success', 'Centro criado com sucesso!');
     }
@@ -47,8 +55,16 @@ class CentroController extends Controller
         $validated = $request->validate([
             'nome' => 'required|string|max:100|unique:centros,nome,' . $centro->id,
             'localizacao' => 'required|string|max:150',
+            'contactos' => 'required|array|min:1',
+            'contactos.*' => 'required|string',
             'email' => 'nullable|email|max:100',
         ]);
+        
+        // Normalizar email para lowercase se fornecido
+        if (!empty($validated['email'])) {
+            $validated['email'] = strtolower($validated['email']);
+        }
+        
         $centro->update($validated);
         return redirect()->route('centros.index')->with('success', 'Centro atualizado com sucesso!');
     }

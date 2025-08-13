@@ -29,31 +29,27 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div id="loadingContent" class="text-center py-5">
-                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
-                        <p>Carregando dados do centro...</p>
-                    </div>
-
-                    <form id="centroForm" style="display: none;">
-                        <input type="hidden" id="centro_id" name="id">
+                    <form id="centroForm" action="{{ route('centros.update', $centro->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
                         
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label for="nome" class="form-label">Nome do Centro <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="nome" name="nome" required maxlength="255">
+                                <input type="text" class="form-control" id="nome" name="nome" value="{{ $centro->nome }}" required maxlength="255">
                                 <div class="form-text">Nome único do centro (máximo 255 caracteres)</div>
                             </div>
                             
                             <div class="col-md-4 mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" maxlength="255">
+                                <input type="email" class="form-control" id="email" name="email" value="{{ $centro->email }}" maxlength="255">
                                 <div class="form-text">Email do centro (opcional)</div>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="localizacao" class="form-label">Localização <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="localizacao" name="localizacao" required maxlength="255">
+                            <input type="text" class="form-control" id="localizacao" name="localizacao" value="{{ $centro->localizacao }}" required maxlength="255">
                             <div class="form-text">Endereço completo ou localização do centro</div>
                         </div>
 
@@ -123,7 +119,7 @@ $(document).ready(function() {
         }
     });
     
-    const centroId = {{ request()->route('id') ?? 'null' }};
+    const centroId = {{ $centro->id ?? 'null' }};
     
     if (centroId) {
         carregarCentro(centroId);
@@ -166,7 +162,7 @@ function carregarCentro(id) {
     $.get(`/api/centros/${id}`)
         .done(function(centro) {
             // Preencher formulário
-            $('#centro_id').val(centro.id);
+            // ID já disponível na view
             $('#nome').val(centro.nome);
             $('#localizacao').val(centro.localizacao);
             $('#email').val(centro.email || '');
@@ -312,7 +308,7 @@ function atualizarPreview() {
 }
 
 function atualizarCentro() {
-    const centroId = $('#centro_id').val();
+    const centroId = {{ $centro->id }};
     
     // Coletar contactos
     const contactos = {};

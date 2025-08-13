@@ -106,7 +106,7 @@ function carregarProdutos() {
                     ? `<img src="${produto.imagem_url}" alt="Imagem do produto" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">` 
                     : '<span class="text-muted"><i class="fas fa-image"></i></span>';
                 
-                const preco = produto.preco ? `€${parseFloat(produto.preco).toFixed(2)}` : 'N/A';
+                const preco = produto.preco ? `Kz${parseFloat(produto.preco).toFixed(2)}` : 'N/A';
                 const dataFormatada = new Date(produto.created_at).toLocaleDateString('pt-PT');
                 
                 html += `
@@ -127,7 +127,7 @@ function carregarProdutos() {
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="visualizarProduto(${produto.id})" title="Visualizar">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <a href="{{ route('produtos.edit', '') }}/${produto.id}" class="btn btn-sm btn-outline-warning" title="Editar">
+                                <a href="/produtos/${produto.id}/edit" class="btn btn-sm btn-outline-warning" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarProduto(${produto.id})" title="Eliminar">
@@ -200,7 +200,7 @@ function visualizarProduto(id) {
                 ? `<img src="${produto.imagem_url}" alt="Imagem do produto" class="img-fluid rounded" style="max-height: 200px;">` 
                 : '<div class="alert alert-light text-center"><i class="fas fa-image fa-3x text-muted"></i><br>Sem imagem</div>';
             
-            const preco = produto.preco ? `€${parseFloat(produto.preco).toFixed(2)}` : 'Preço não definido';
+            const preco = produto.preco ? `Kz${parseFloat(produto.preco).toFixed(2)}` : 'Preço não definido';
             
             let html = `
                 <div class="row">

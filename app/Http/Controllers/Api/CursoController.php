@@ -46,6 +46,13 @@ class CursoController extends Controller
             });
         }
 
+        // Filtro por centro único (para compatibilidade com o frontend)
+        if ($request->filled('centro_id')) {
+            $query->whereHas('centros', function($q) use ($request) {
+                $q->where('centros.id', $request->centro_id);
+            });
+        }
+
         // Filtro por área
         if ($request->filled('area')) {
             $query->where('area', 'like', '%' . $request->area . '%');

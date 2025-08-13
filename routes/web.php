@@ -77,13 +77,17 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('centros', CentroController::class);
     
     // Formadores
-    Route::resource('formadores', FormadorController::class);
+    Route::resource('formadores', FormadorController::class)->parameters([
+        'formadores' => 'formador'
+    ]);
     
     // Horários
     Route::resource('horarios', HorarioController::class);
     
     // Pré-inscrições
-    Route::resource('pre-inscricoes', PreInscricaoController::class);
+    Route::resource('pre-inscricoes', PreInscricaoController::class)->parameters([
+        'pre-inscricoes' => 'preInscricao'
+    ]);
     Route::patch('pre-inscricoes/{preInscricao}/status', [PreInscricaoController::class, 'updateStatus'])->name('pre-inscricoes.update-status');
     
     // Categorias

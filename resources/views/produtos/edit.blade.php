@@ -29,24 +29,21 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div id="loadingContent" class="text-center py-5">
-                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
-                        <p>Carregando dados do produto...</p>
-                    </div>
-
-                    <form id="produtoForm" style="display: none;">
-                        <input type="hidden" id="produto_id" name="id">
+                    <form id="produtoForm" method="POST" action="{{ route('produtos.update', $produto->id) }}">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" id="produto_id" name="id" value="{{ $produto->id }}">
                         
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label for="nome" class="form-label">Nome do Produto <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="nome" name="nome" required maxlength="100">
+                                <input type="text" class="form-control" id="nome" name="nome" required maxlength="100" value="{{ $produto->nome }}">
                                 <div class="form-text">Máximo 100 caracteres</div>
                             </div>
                             
                             <div class="col-md-4 mb-3">
                                 <label for="preco" class="form-label">Preço (€) <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="preco" name="preco" step="0.01" min="0" required>
+                                <input type="number" class="form-control" id="preco" name="preco" step="0.01" min="0" required value="{{ $produto->preco }}">
                                 <div class="form-text">Ex: 12.50</div>
                             </div>
                         </div>
@@ -55,36 +52,43 @@
                             <div class="col-md-6 mb-3">
                                 <label for="categoria_id" class="form-label">Categoria <span class="text-danger">*</span></label>
                                 <select class="form-select" id="categoria_id" name="categoria_id" required>
-                                    <option value="">Carregando categorias...</option>
+                                    <option value="">Selecione uma categoria</option>
+                                    @foreach($categorias as $categoria)
+                                        @if($categoria->ativo)
+                                            <option value="{{ $categoria->id }}" {{ $produto->categoria_id == $categoria->id ? 'selected' : '' }}>
+                                                {{ $categoria->nome }} ({{ $categoria->tipo }})
+                                            </option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
                             
                             <div class="col-md-3 mb-3">
                                 <label for="ativo" class="form-label">Status</label>
                                 <select class="form-select" id="ativo" name="ativo">
-                                    <option value="1">Ativo</option>
-                                    <option value="0">Inativo</option>
+                                    <option value="1" {{ $produto->ativo ? 'selected' : '' }}>Ativo</option>
+                                    <option value="0" {{ !$produto->ativo ? 'selected' : '' }}>Inativo</option>
                                 </select>
                             </div>
 
                             <div class="col-md-3 mb-3">
                                 <label for="em_destaque" class="form-label">Em Destaque</label>
                                 <select class="form-select" id="em_destaque" name="em_destaque">
-                                    <option value="0">Não</option>
-                                    <option value="1">Sim</option>
+                                    <option value="0" {{ !$produto->em_destaque ? 'selected' : '' }}>Não</option>
+                                    <option value="1" {{ $produto->em_destaque ? 'selected' : '' }}>Sim</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="imagem_url" class="form-label">URL da Imagem</label>
-                            <input type="url" class="form-control" id="imagem_url" name="imagem_url" maxlength="255">
+                            <input type="url" class="form-control" id="imagem_url" name="imagem_url" maxlength="255" value="{{ $produto->imagem_url }}">
                             <div class="form-text">URL opcional para a imagem do produto</div>
                         </div>
 
                         <div class="mb-3">
                             <label for="descricao" class="form-label">Descrição</label>
-                            <textarea class="form-control" id="descricao" name="descricao" rows="4" maxlength="1000"></textarea>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="4" maxlength="1000">{{ $produto->descricao }}</textarea>
                             <div class="form-text">Descrição detalhada do produto (máximo 1000 caracteres)</div>
                         </div>
 
@@ -108,11 +112,21 @@
                         <i class="fas fa-info-circle me-2"></i>Informações
                     </h6>
                 </div>
-                <div class="card-body" id="infoCard">
-                    <div class="text-center py-3">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p class="mb-0 mt-2">Carregando...</p>
-                    </div>
+                <div class="card-body">
+                    <p><strong>ID:</strong> {{ $produto->id }}</p>
+                    <p><strong>Data de Criação:</strong><br><small>{{ $produto->created_at->format('d/m/Y H:i') }}</small></p>
+                    <p><strong>Última Atualização:</strong><br><small>{{ $produto->updated_at->format('d/m/Y H:i') }}</small></p>
+                    @if($produto->categoria)
+                        <p><strong>Categoria Atual:</strong><br><small>{{ $produto->categoria->nome }} ({{ $produto->categoria->tipo }})</small></p>
+                    @endif
+                    <hr>
+                    <h6 class="text-warning">Atenção:</h6>
+                    <ul class="small">
+                        <li>As alterações serão salvas imediatamente</li>
+                        <li>Certifique-se de que todos os dados estão corretos</li>
+                        <li>Produtos inativos não aparecerão nas listagens públicas</li>
+                        <li>Produtos em destaque aparecem em posição privilegiada</li>
+                    </ul>
                 </div>
             </div>
 
@@ -133,110 +147,20 @@
 
 @section('scripts')
 <script>
+const produtoId = {{ $produto->id ?? 'null' }};
+
 $(document).ready(function() {
-    // Configurar headers AJAX globalmente
-    $.ajaxSetup({
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    
-    const produtoId = {{ request()->route('id') ?? 'null' }};
-    
-    carregarCategorias();
-    
-    if (produtoId) {
-        carregarProduto(produtoId);
-    } else {
-        Swal.fire('Erro!', 'ID do produto não fornecido.', 'error').then(() => {
-            window.location.href = '{{ route("produtos.index") }}';
-        });
-    }
+    // Os dados já estão carregados no formulário via Blade
+    // Apenas inicializar o preview
+    atualizarPreview();
 
     // Preview em tempo real
     $('#produtoForm input, #produtoForm select, #produtoForm textarea').on('input change', function() {
         atualizarPreview();
     });
 
-    // Submit do formulário
-    $('#produtoForm').on('submit', function(e) {
-        e.preventDefault();
-        atualizarProduto();
-    });
+    // Submit do formulário - usando submit normal (não AJAX)
 });
-
-function carregarCategorias() {
-    $.get('/api/categorias', function(data) {
-        let options = '<option value="">Selecione uma categoria</option>';
-        
-        // Filtrar apenas categorias ativas
-        const categoriasAtivas = data.filter(categoria => categoria.ativo);
-        
-        categoriasAtivas.forEach(function(categoria) {
-            options += `<option value="${categoria.id}">${categoria.nome} (${categoria.tipo})</option>`;
-        });
-        
-        $('#categoria_id').html(options);
-    }).fail(function() {
-        $('#categoria_id').html('<option value="">Erro ao carregar categorias</option>');
-    });
-}
-
-function carregarProduto(id) {
-    $.get(`/api/produtos/${id}`)
-        .done(function(produto) {
-            // Preencher formulário
-            $('#produto_id').val(produto.id);
-            $('#nome').val(produto.nome);
-            $('#preco').val(produto.preco);
-            $('#categoria_id').val(produto.categoria_id);
-            $('#ativo').val(produto.ativo ? 1 : 0);
-            $('#em_destaque').val(produto.em_destaque ? 1 : 0);
-            $('#imagem_url').val(produto.imagem_url || '');
-            $('#descricao').val(produto.descricao || '');
-
-            // Mostrar informações
-            mostrarInformacoesProduto(produto);
-
-            // Mostrar formulário
-            $('#loadingContent').hide();
-            $('#produtoForm').show();
-
-            // Atualizar preview inicial
-            atualizarPreview();
-        })
-        .fail(function() {
-            Swal.fire('Erro!', 'Produto não encontrado.', 'error').then(() => {
-                window.location.href = '{{ route("produtos.index") }}';
-            });
-        });
-}
-
-function mostrarInformacoesProduto(produto) {
-    const dataFormatada = new Date(produto.created_at).toLocaleDateString('pt-PT');
-    const dataAtualizacao = new Date(produto.updated_at).toLocaleDateString('pt-PT');
-
-    const infoHtml = `
-        <p><strong>ID:</strong> ${produto.id}</p>
-        <p><strong>Data de Criação:</strong><br><small>${dataFormatada}</small></p>
-        <p><strong>Última Atualização:</strong><br><small>${dataAtualizacao}</small></p>
-        ${produto.categoria ? `<p><strong>Categoria Atual:</strong><br><small>${produto.categoria.nome} (${produto.categoria.tipo})</small></p>` : ''}
-        
-        <hr>
-        
-        <h6 class="text-warning">Atenção:</h6>
-        <ul class="small">
-            <li>As alterações serão salvas imediatamente</li>
-            <li>Certifique-se de que todos os dados estão corretos</li>
-            <li>Produtos inativos não aparecerão nas listagens públicas</li>
-            <li>Produtos em destaque aparecem em posição privilegiada</li>
-        </ul>
-    `;
-
-    $('#infoCard').html(infoHtml);
-}
 
 function atualizarPreview() {
     const nome = $('#nome').val();
@@ -279,59 +203,6 @@ function atualizarPreview() {
     } else {
         $('#previewCard').hide();
     }
-}
-
-function atualizarProduto() {
-    const produtoId = $('#produto_id').val();
-    const formData = {
-        nome: $('#nome').val(),
-        preco: parseFloat($('#preco').val()),
-        categoria_id: parseInt($('#categoria_id').val()),
-        ativo: parseInt($('#ativo').val()),
-        em_destaque: parseInt($('#em_destaque').val()),
-        imagem_url: $('#imagem_url').val() || null,
-        descricao: $('#descricao').val() || null
-    };
-
-    $.ajax({
-        url: `/api/produtos/${produtoId}`,
-        method: 'PUT',
-        data: JSON.stringify(formData),
-        contentType: 'application/json',
-        beforeSend: function() {
-            $('#produtoForm button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Atualizando...');
-        },
-        success: function(response) {
-            Swal.fire({
-                title: 'Sucesso!',
-                text: 'Produto atualizado com sucesso!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '{{ route("produtos.index") }}';
-            });
-        },
-        error: function(xhr) {
-            let message = 'Ocorreu um erro ao atualizar o produto.';
-            
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                message = xhr.responseJSON.message;
-            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                const errors = Object.values(xhr.responseJSON.errors).flat();
-                message = errors.join('<br>');
-            }
-
-            Swal.fire({
-                title: 'Erro!',
-                html: message,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        },
-        complete: function() {
-            $('#produtoForm button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Atualizar Produto');
-        }
-    });
 }
 </script>
 @endsection

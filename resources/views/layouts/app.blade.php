@@ -153,8 +153,11 @@
             <button class="btn btn-outline-primary d-md-none" type="button" onclick="toggleSidebar()">
                 <i class="fas fa-bars"></i>
             </button>
-            <a class="navbar-brand ms-3" href="{{ route('dashboard') }}">
-                <i class="fas fa-graduation-cap me-2"></i>MC Comercial
+            <a class="navbar-brand ms-3 d-flex align-items-center" href="{{ route('dashboard') }}">
+                <div class="text-center">
+                    <img src="{{ asset('images/logo.png') }}" alt="MC-COMERCIAL" style="height: 35px; max-height: 35px; width: auto; display: block; margin: 0 auto;">
+                    <div style="font-size: 0.7rem; font-weight: 600; color: var(--primary-color); line-height: 1; margin-top: 2px;">MC-COMERCIAL</div>
+                </div>
             </a>
             
             <div class="navbar-nav ms-auto">
@@ -178,6 +181,11 @@
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
+        <div class="text-center py-3 mb-3" style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+            <img src="{{ asset('images/logo.png') }}" alt="MC-COMERCIAL" style="height: 40px; max-height: 40px; width: auto; display: block; margin: 0 auto;">
+            <div style="font-size: 0.8rem; font-weight: 600; color: white; line-height: 1; margin-top: 0.5rem;">MC-COMERCIAL</div>
+            <small style="color: rgba(255,255,255,0.7); font-size: 0.7rem;">Sistema de Gestão</small>
+        </div>
         <div class="nav flex-column">
             <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
                 <i class="fas fa-tachometer-alt me-2"></i>Dashboard
@@ -197,10 +205,6 @@
             <a class="nav-link {{ request()->routeIs('pre-inscricoes.*') ? 'active' : '' }}" href="{{ route('pre-inscricoes.index') }}">
                 <i class="fas fa-user-plus me-2"></i>Pré-Inscrições
             </a>
-            <hr class="my-3" style="border-color: rgba(255,255,255,0.3);">
-            <div class="px-3 mb-2">
-                <small class="text-light opacity-75">LOJA & SNACK BAR</small>
-            </div>
             <a class="nav-link {{ request()->routeIs('categorias.*') ? 'active' : '' }}" href="{{ route('categorias.index') }}">
                 <i class="fas fa-tags me-2"></i>Categorias
             </a>

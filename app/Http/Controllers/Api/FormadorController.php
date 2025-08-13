@@ -77,8 +77,9 @@ class FormadorController extends Controller
         $validated = $request->validate([
             'nome' => 'required|string|max:100',
             'email' => 'nullable|email|max:100|unique:formadores,email',
-            'contactos' => ['required', 'array', 'min:1'],
-            'contactos.*' => ['required', 'string', 'regex:/^9\d{8}$/'],
+            'contactos' => 'nullable|array',
+            'contactos.*.tipo' => 'nullable|string',
+            'contactos.*.valor' => 'nullable|string',
             'especialidade' => 'nullable|string|max:100',
             'bio' => 'nullable|string|max:500',
             'foto_url' => 'nullable|url|max:255',
@@ -88,8 +89,27 @@ class FormadorController extends Controller
             'centros.*' => 'exists:centros,id'
         ]);
 
-        // Garante que todos os contactos são strings
-        $validated['contactos'] = array_map('strval', $validated['contactos']);
+        // Processar contactos: garantir formato consistente
+        if (isset($validated['contactos']) && is_array($validated['contactos'])) {
+            $contactosProcessados = [];
+            foreach ($validated['contactos'] as $contacto) {
+                if (is_array($contacto) && !empty($contacto['tipo']) && !empty($contacto['valor'])) {
+                    // Formato novo: array de objetos - só adiciona se ambos tipo e valor estiverem preenchidos
+                    $contactosProcessados[] = [
+                        'tipo' => $contacto['tipo'],
+                        'valor' => $contacto['valor']
+                    ];
+                } elseif (is_string($contacto)) {
+                    // Formato antigo: string simples
+                    $contactosProcessados[] = $contacto;
+                }
+            }
+            $validated['contactos'] = $contactosProcessados;
+        } else {
+            // Se não há contactos, define como array vazio
+            $validated['contactos'] = [];
+        }
+        
         // Normaliza o email para minúsculas
         if (!empty($validated['email'])) {
             $validated['email'] = strtolower($validated['email']);
@@ -199,8 +219,9 @@ class FormadorController extends Controller
         $validated = $request->validate([
             'nome' => 'required|string|max:100',
             'email' => 'nullable|email|max:100|unique:formadores,email' . ($request->method() === 'PUT' ? ',' . $id : ''),
-            'contactos' => ['required', 'array', 'min:1'],
-            'contactos.*' => ['required', 'string', 'regex:/^9\d{8}$/'],
+            'contactos' => 'nullable|array',
+            'contactos.*.tipo' => 'nullable|string',
+            'contactos.*.valor' => 'nullable|string',
             'especialidade' => 'nullable|string|max:100',
             'bio' => 'nullable|string|max:500',
             'foto_url' => 'nullable|url|max:255',
@@ -209,8 +230,28 @@ class FormadorController extends Controller
             'centros' => 'array',
             'centros.*' => 'exists:centros,id'
         ]);
-        // Garante que todos os contactos são strings
-        $validated['contactos'] = array_map('strval', $validated['contactos']);
+        
+        // Processar contactos: garantir formato consistente
+        if (isset($validated['contactos']) && is_array($validated['contactos'])) {
+            $contactosProcessados = [];
+            foreach ($validated['contactos'] as $contacto) {
+                if (is_array($contacto) && !empty($contacto['tipo']) && !empty($contacto['valor'])) {
+                    // Formato novo: array de objetos - só adiciona se ambos tipo e valor estiverem preenchidos
+                    $contactosProcessados[] = [
+                        'tipo' => $contacto['tipo'],
+                        'valor' => $contacto['valor']
+                    ];
+                } elseif (is_string($contacto)) {
+                    // Formato antigo: string simples
+                    $contactosProcessados[] = $contacto;
+                }
+            }
+            $validated['contactos'] = $contactosProcessados;
+        } else {
+            // Se não há contactos, define como array vazio
+            $validated['contactos'] = [];
+        }
+        
         // Normaliza o email para minúsculas
         if (!empty($validated['email'])) {
             $validated['email'] = strtolower($validated['email']);
