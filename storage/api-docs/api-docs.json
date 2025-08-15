@@ -12,89 +12,6 @@
         }
     ],
     "paths": {
-        "/login": {
-            "post": {
-                "tags": [
-                    "Autenticação"
-                ],
-                "summary": "Login do admin",
-                "description": "Autentica o admin e retorna um token de acesso",
-                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "admin@site.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "senha123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Login bem sucedido",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "token": {
-                                            "type": "string",
-                                            "example": "1|LongTokenString"
-                                        },
-                                        "user": {
-                                            "$ref": "#/components/schemas/User"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Credenciais inválidas"
-                    }
-                }
-            }
-        },
-        "/logout": {
-            "post": {
-                "tags": [
-                    "Autenticação"
-                ],
-                "summary": "Logout do admin",
-                "description": "Remove o token de acesso atual",
-                "operationId": "28d48c13fca984400ac8de99f54ee13a",
-                "responses": {
-                    "200": {
-                        "description": "Logout realizado com sucesso"
-                    },
-                    "401": {
-                        "description": "Não autorizado"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/categorias": {
             "get": {
                 "tags": [
@@ -2354,10 +2271,6 @@
         {
             "name": "Produtos",
             "description": "Operações relacionadas a produtos"
-        },
-        {
-            "name": "Autenticação",
-            "description": "Autenticação"
         }
     ]
 }
